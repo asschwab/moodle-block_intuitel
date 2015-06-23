@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.intuitel.eu/DataModel/"
+    xmlns="http://www.intuitel.eu/DataModel/" 
+    elementFormDefault="qualified">
+
+    <xs:element name="INTUITEL">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref="LmsProfile" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="Learner" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Learners" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="LoMapping" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Authentication" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Tug" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="Lore" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:sequence>
+                    <xs:element ref="UsePerf" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="UseEnv" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:simpleType name="uuid">
+        <xs:restriction base="xs:string">
+            <xs:length value="36"/>
+            <xs:pattern value="[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="Data">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="retVal">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OK"/>
+            <xs:enumeration value="PAUSE"/>
+            <xs:enumeration value="ERR"/>
+        </xs:restriction>
+    </xs:simpleType>
+        
+    <!-- ##################### INTUITEL initialization ##################### -->
+
+    <xs:element name="LmsProfile">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Data" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ##################### Learner monitoring ##################### -->
+
+    <xs:element name="Learner">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Lore" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="Tug" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+            <xs:attribute name="uId" type="xs:string" use="required"/>
+            <xs:attribute name="loId" type="xs:string" use="optional"/>
+            <xs:attribute name="time" type="xs:long" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Learners">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Learner" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="VisitedLo" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="loId" type="xs:string" use="required"/>
+                                    <xs:attribute name="time" type="xs:long" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="uId" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ##################### Learning Object Mapping ##################### -->
+
+    <xs:element name="LoMapping">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Data" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ##################### Authentication ##################### -->
+
+    <xs:element name="Authentication">
+        <xs:complexType>
+            <xs:choice>
+                <xs:sequence>
+                    <xs:element name="LoPerm" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:attribute name="loId" type="xs:string" use="required"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+                <xs:element name="Pass" type="xs:string"/>
+            </xs:choice>
+            <xs:attribute name="uId" type="xs:string" use="required"/>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+            <xs:attribute name="status" use="optional">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="OK"/>
+                        <xs:enumeration value="ERR"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ##################### TUG ##################### -->
+
+    <xs:element name="Tug">
+        <xs:complexType>
+            <xs:choice minOccurs="1">
+                <xs:sequence>
+                    <xs:element name="MType" minOccurs="1" maxOccurs="1">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:positiveInteger">
+                                <xs:minInclusive value="1"/>
+                                <xs:maxInclusive value="2999"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="MData" minOccurs="1" maxOccurs="1" type="xs:anyType"/>
+                </xs:sequence>
+                <xs:sequence>
+                    <xs:element ref="Data" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:choice>
+            <xs:attribute name="uId" type="xs:string" use="required"/>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+            <xs:attribute name="rId" type="uuid" use="optional"/>
+            <xs:attribute name="retVal" type="retVal" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ##################### LORE ##################### -->
+
+    <xs:element name="Lore">
+        <xs:complexType>
+            <xs:choice>
+                <xs:sequence>
+                    <xs:element name="LorePrio" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                            <xs:attribute name="loId" type="xs:string" use="required"/>
+                            <xs:attribute name="value" use="required">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="0"/>
+                                        <xs:maxInclusive value="100"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:attribute>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:choice>
+            <xs:attribute name="uId" type="xs:string" use="required"/>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+            <xs:attribute name="rId" type="uuid" use="optional"/>
+            <xs:attribute name="retVal" type="retVal" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ##################### USE ##################### -->
+
+    <xs:element name="UsePerf">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="LoPerf" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded" >
+                            <xs:element name="Score" type="scoreType" />
+                        </xs:sequence>
+                        <xs:attribute name="loId" type="xs:string" use="required" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="uId" type="xs:string" use="required" />
+            <xs:attribute name="mId" type="uuid" use="required" />
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="scoreType">
+        <xs:attribute name="type" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="grade"/>
+                    <xs:enumeration value="completion"/>
+                    <xs:enumeration value="seenPercentage"/>
+                    <xs:enumeration value="internal"/>
+                    <xs:enumeration value="accessed"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="value" use="required" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:element name="UseEnv">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="Data" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="uId" type="xs:string" use="required"/>
+            <xs:attribute name="mId" type="uuid" use="required"/>
+            <xs:attribute name="retVal" type="retVal" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
