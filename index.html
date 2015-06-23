@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Moodle block for Intelligent Tutor system INTUITEL by juacas</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Moodle block for Intelligent Tutor system INTUITEL</h1>
+        <p></p>
+
+        <p class="view"><a href="https://github.com/juacas/block_intuitel">View the Project on GitHub <small>juacas/block_intuitel</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/juacas/block_intuitel/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/juacas/block_intuitel/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/juacas/block_intuitel">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="moodle-plugin-for-intuitel-intelligent-tutoring-system" class="anchor" href="#moodle-plugin-for-intuitel-intelligent-tutoring-system" aria-hidden="true"><span class="octicon octicon-link"></span></a>Moodle Plugin for INTUITEL Intelligent Tutoring System</h1>
+
+<h2>
+<a id="intuitel-plugin" class="anchor" href="#intuitel-plugin" aria-hidden="true"><span class="octicon octicon-link"></span></a>INTUITEL Plugin</h2>
+
+<p>This plugin implements an interface to the Intelligent Tutoring System INTUITEL, allowing this intelligent system to interact with the learners in a Moodle course.
+Three different communication interfaces as well as general services have been defined in the framework of the project INTUITEL (see public deliverables of this project available in <a href="http://www.intuitel.eu">http://www.intuitel.eu</a>) enabling any LMS to implement those interfaces in order to operate with INTUITEL tutorship. The general services involve basic functionalities such as the initialization of the operation between an LMS and an INTUITEL server or the notification of learning object transitions by the learners.
+<a href="https://www.youtube.com/watch?v=WuysRWqAHC4&amp;feature=youtu.be">INTUITEL Video Presentation</a>
+<code>&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/WuysRWqAHC4" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</code>
+The other required interfaces, which involve more specific INTUITEL functionalities and/or direct interaction with the learner, are the following:
+• User Score Extractor (USE): an interface for querying the LMS for learning data and metrics such as the time spent on a learning object or the grade obtained in a test. 
+• Learning Object Recommender (LORE): an interface used by INTUITEL to offer a recommendation factor per learning object and user, based on the current learning situation of the learner. 
+• Tutorial Guidance (TUG): component that allows a dialog between the learner and the INTUITEL system. </p>
+
+<p>This plugin implements these interfaces as a standard Moodle block. INTUITEL requires that each learning object transition is notified by the LMS. Then, each time a learner visits a learning object in a course, the INTUITEL block is loaded in the browser, triggering a notification to INTUITEL informing it about the interaction with that learning object. INTUITEL will react to that notification by providing the user with a list of personalized recommendation factors for the different learning objects of that course and/or TUG messages, according to the current situation of the learner. The implementation displays LORE recommendations as well as TUG messages encoded as a W3C form within the content of the block. Besides, it modifies the Document Object Model (DOM) model of the page highlighting the relevant learning objects with a set of stars according to the recommendation factor.</p>
+
+<p>In order to be able of recommending learning objects, INTUITEL needs to be instructed about the pedagogical design of the course. This is done outside Moodle by means of the INTUITEL Editor. This piece of software is an installable program that allows the teachers to draw Learning Paths  by connecting and grouping the learning objects of the course.
+Therefore, to operate with INTUITEL tutorship one needs a Moodle site extended with this plugin, an INTUITEL back-end and a course linked with pedagogical metadata by using the Editor.</p>
+
+<p>The software of the INTUITEL backend and the Editor, as well as further information about the INTUITEL project is available at <a href="http://www.intuitel.eu">www.intuitel.eu</a> (The INTUITEL project has received funding from the European Union’s Seventh Framework Programme for research, technological development and demonstration under grant agreement no 318496). </p>
+
+<h2>
+<a id="design-details" class="anchor" href="#design-details" aria-hidden="true"><span class="octicon octicon-link"></span></a>Design details</h2>
+
+<h3>
+<a id="security-configuration" class="anchor" href="#security-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Security configuration</h3>
+
+<p>The plugin should be configured to allow the connection to/from the external INTUITEL engine. The authentication is made by specifying a white-list of network addresses.</p>
+
+<h3>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>The teachers that wants to use INTUITEL in their courses only need to add this block to the course. The block monitors every page load and displays the recommendations generated by the INTUITEL backend.</p>
+
+<h1>
+<a id="copyright" class="anchor" href="#copyright" aria-hidden="true"><span class="octicon octicon-link"></span></a>Copyright</h1>
+
+<p>© EDUVALab (University of Valladolid) <a href="http://www.eduvalab.uva.es">http://www.eduvalab.uva.es</a> as part of the INTUITEL Consortium.  Code for this plugin is licensed under the GPLv3 license.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/juacas">juacas</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
