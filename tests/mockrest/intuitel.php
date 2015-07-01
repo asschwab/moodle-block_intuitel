@@ -10,9 +10,9 @@ require_once("../../locallib.php");
 require_once("../../impl/moodle/moodleAdaptor.php");
 require_once("../../model/Intuitel.php");
 require_once("../../model/intuitelController.php");
-require_once ('../../model/intuitelLO.php');
-//require_once ('DumbIntuitel.php');
-require_once ('SmartyIntuitel.php');
+require_once('../../model/intuitelLO.php');
+//require_once('DumbIntuitel.php');
+require_once('SmartyIntuitel.php');
 
 // test this with: http://localhost/moodle2/blocks/intuitel/tests/mockrest/intuitel.php?xml=%3CINTUITEL%3E%3CLearner%20uId=%22pepe%22/%3E%3C/INTUITEL%3E
 // http://localhost/moodle2/blocks/intuitel/tests/mockrest/intuitel.php?xml=%3CINTUITEL%3E%3CLearner%20uId=%22pepe%22%20loId=%22wqHKFQmiYXEq4tE6y4BztVFIdzsIe2d7localhost-CO2%22%20debugcourse=%222%22/%3E%3C/INTUITEL%3E

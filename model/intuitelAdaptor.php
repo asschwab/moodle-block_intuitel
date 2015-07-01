@@ -1,4 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Abstract class to ease the implementation of INTUITEL in a more LMS-independent manner
+ *
+ * @package    block_intuitel
+ * @author Juan Pablo de Castro, Elena Verdú.
+ * @copyright  2015 Intuitel Consortium
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace intuitel;
 require_once('intuitelLO.php');
 require_once('exceptions.php');
@@ -11,12 +34,12 @@ abstract class IntuitelAdaptor
 	 */
 	var $course;
 
-	
+
 	function __construct(\stdClass $course=null)
 	{
 		$this->course=$course;
 	}
-	
+
 	/**
 	 * Creates a new LearningObject representing an existing object in the LMS
 	 * @param string $type
@@ -43,13 +66,13 @@ abstract class IntuitelAdaptor
 	 *        	name=>value filter array
 	 */
 	public function findLObyAttributes(array $attributes) {
-		
-		if (array_key_exists( 'loId', $attributes ) 
+
+		if (array_key_exists( 'loId', $attributes )
 			&& array_key_exists ( 'getFullCourse', $attributes )
 			&& $attributes['getFullCourse'] == 'true')
 		{
 			// retrieve all objects in course
-			$id = $attributes ['loId'];				
+			$id = $attributes ['loId'];
 			$loId = $id instanceof LOId?$id:new LOId( $id );
 			try
 			{
@@ -70,7 +93,7 @@ abstract class IntuitelAdaptor
 			// return one object
 			$id = $attributes ['loId'];
 			$loId = $id instanceof LOId?$id:new LOId ( $id );
-			
+
 			try{
 				$lo = IntuitelAdaptor::createLO($loId);
 				return array (
@@ -85,9 +108,9 @@ abstract class IntuitelAdaptor
 				return array();
 			}
 		} else { // search every course by params
-			
+
 			$courses = Intuitel::getIntuitelEnabledCourses();
-			$total_list = array ();	
+			$total_list = array ();
 			foreach ( $courses as $course ) {
 				$filter = array (
 						'loId' => $course->loId,
@@ -96,7 +119,7 @@ abstract class IntuitelAdaptor
 				$list = $this->findLObyAttributes ( $filter );
 				$total_list = array_merge ($total_list, $list );
 			}
-			
+
 			// filter out unwanted items
 			$final_list = $this->filterUnmatched($total_list, $attributes );
 			return $final_list;
@@ -157,13 +180,13 @@ abstract class IntuitelAdaptor
 	 */
 	abstract public function getUsersEnrolled(CourseLO $course);
 	/**
-	 * get the USE data for a certain object and user (completion, grade, accessed, seenPercentage) for a USE request 
-	 * @param intuitelLO $lo 
+	 * get the USE data for a certain object and user (completion, grade, accessed, seenPercentage) for a USE request
+	 * @param intuitelLO $lo
 	 * @param int $native_user_id
 	 */
 	abstract public function getUseData($lo, $native_user_id);
 	/**
-	 * get the USE environment data for a certain user 
+	 * get the USE environment data for a certain user
 	 * @param stdClass $native_user
 	 * @param string $type
 	 * @return array(EnvEntry) array of environmental properties
@@ -179,18 +202,18 @@ abstract class IntuitelAdaptor
 	 * @return void
 	 */
 	abstract public function registerEnvironment($type,$value,$native_user,$timestamp);
-	
-	
+
+
 	/**
 	 * for each user in $user_ids, updates database table intuitel_polltimes with the time indicated as parameter (time when last poll of learner logs data)
 	 * @param array $user_ids native user ids list
-	 * @param long integer $time 
+	 * @param long integer $time
 	 */
 	abstract public function markLearnerUpdatePollTime(array $user_ids,$time);
 	/**
 	 * get the LEARNER_UPDATE data for  certain users containing events (accesses to learning objects) after the given time
 	 * grouped by userid
-	 * 
+	 *
 	 * @param array $native_user_ids list
 	 * @param CourseLO|null $course object null means all intuitel-enabled courses
 	 * @param long|null $from time window starting if null last polling record is used
@@ -211,7 +234,7 @@ abstract class IntuitelAdaptor
 	 * @return array(array(VisitEvent)) of arrays userID=>array(VisitEvent)
 	 */
 	abstract public function getINTUITELInteractions(array $native_user_ids, CourseLO $course=null, $from=null, $to=null,$filter_offline_users=true);
-	
+
 	/**
 	 *
 	 * @param \stdClass $nativedata
@@ -258,7 +281,7 @@ abstract class IntuitelAdaptor
         2000 + x
         Emulation of USE, with value x is any valid MType < 1000
         As required by the corresponding MType
-        
+
         100
         Text question, to be answered with a natural language text
         Text, if necessary with HTML formatting
@@ -285,24 +308,24 @@ abstract class IntuitelAdaptor
      * @return string HTML
      */
 	abstract public function generateHtmlForTugAndLore(\SimpleXMLElement $doc, $courseid);
-	abstract public function logTugAnswer($courseid,$native_user_id,$mId,$info);
-	abstract public function logTugDismiss($courseid,$native_user_id,$mId,$info);
-	abstract public function logTugView($courseid,$native_user_id,$mId,$info);
-	abstract public function logLoreView($courseid,$native_user_id,$mId,$info);
+	abstract public function logTugAnswer($courseid,$native_user_id,$mid,$info);
+	abstract public function logTugDismiss($courseid,$native_user_id,$mid,$info);
+	abstract public function logTugView($courseid,$native_user_id,$mid,$info);
+	abstract public function logLoreView($courseid,$native_user_id,$mid,$info);
 }
 abstract class IntuitelAdaptorFactory
 {
 	/**
-	 * 
+	 *
 	 * @param \stdClass $course can be null if is to be used for LMS-wide operations
 	 * @return IntuitelAdaptor
 	 */
 	public abstract function getInstanceForCourse(\stdClass $course=null);
 	/**
-	 * 
+	 *
 	 * @param LOId $course
 	 * @return IntuitelAdaptor
 	 */
 	public abstract function getInstanceForCourseLoID(LOId $course);
-	
+
 }

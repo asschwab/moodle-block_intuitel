@@ -1,4 +1,26 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * visual representation of user events (for debugging purpouses)
+ *
+ * @package    block_intuitel
+ * @author Juan Pablo de Castro, Elena Verdú.
+ * @copyright  2015 Intuitel Consortium
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 use intuitel\Intuitel;
 use intuitel\LOId;
 use intuitel\CourseLO;
@@ -9,9 +31,10 @@ use intuitel\VisitEvent;
 require_once('../../../../config.php');
 require_once("../../model/Intuitel.php");
 require_once("../../model/intuitelController.php");
-require_once ('../../model/intuitelLO.php'); 
+require_once('../../model/intuitelLO.php');
 require_once("../../locallib.php");
 require_once("../../impl/moodle/moodleAdaptor.php");
+
 
 //  disable_moodle_page_exception_handler();
 $userid= required_param('userid',PARAM_INT);
@@ -28,7 +51,11 @@ $min_time = optional_param('mintime',null,PARAM_INTEGER); // minimum time to con
 $forcestructure = optional_param('forcestructure', false, PARAM_BOOL); // include course structure
 $include_INTUITEL = optional_param('includeINTUITEL', false, PARAM_BOOL); // include course structure
 require_login($courseid,false);
-
+global $CFG;
+if ($CFG->block_intuitel_debug_level != KLogger::DEBUG) {
+    echo "This debug function can only be used when debugging is enabled in Intuitel preferences with level: DEBUG.";
+    die();
+}
 if ($fromtime_str)
     $fromtime = strtotime($fromtime_str);
 else
@@ -41,7 +68,7 @@ else
 $adaptor = Intuitel::getAdaptorInstance();
 $courseLo = $adaptor->createLO(Intuitel::getIDFactory()->getLoIdfromId('course',$courseid));
 $userID = Intuitel::getIDFactory()->getUserId($userid);
- 
+
 $events_user = $adaptor->getLearnerUpdateData(array($userid),$courseLo,$fromtime,$totime,false);
 $interactionEvents = $adaptor->getINTUITELInteractions(array($userid),$courseLo,$fromtime,$totime,false);
 
@@ -131,7 +158,7 @@ foreach($node_list as $node=>$visits)
     $loType=Intuitel::getIDFactory()->getType($lo->loId);
     if ($supress_course && $loType == 'course')
         continue;
-    $name=str_replace('"','',$lo->loName);   
+    $name=str_replace('"','',$lo->loName);
     $node = loId_escape($lo->loId);
     list($imgurl,$url)=cleanHTML(generateHtmlModuleLink(Intuitel::getIDFactory()->getIdfromLoId($loId)));
     //$img = "<IMG SRC=\"$imgurl\"/>";
@@ -164,7 +191,7 @@ $graph_title = "fontsize=20;\nlabelloc=\"t\";\nlabel = \"Graph of user $userid a
 
 /***********************
  * transitions
- */ 
+ */
 $previousEvent=null;
 $durations=array_reverse($durations);
 $num=1;
@@ -195,14 +222,14 @@ foreach ($durations as $event)
     else
     {
         $previouslo=($previousEvent instanceof intuitel\VisitEvent)?$adaptor->createLO($previousEvent->loId):null;
-        $eventlo=($event instanceof intuitel\VisitEvent)?$adaptor->createLO($event->loId):null;  
+        $eventlo=($event instanceof intuitel\VisitEvent)?$adaptor->createLO($event->loId):null;
         if ($min_time==null || $previousEvent->duration>$min_time) // ignore too short transitions
         {
         $duration = $previousEvent->duration <60?"$previousEvent->duration sec.":strftime("%M min %S sec", $previousEvent->duration);
         $label = "<<TABLE VALIGN=\"MIDDLE\" COLOR=\"gray\" BGCOLOR=\"white\" BORDER=\"1\" CELLBORDER=\"0\" CELLPADDING=\"2\" CELLSPACING=\"0\" >".
                  "<TR><TD ROWSPAN=\"2\" BGCOLOR=\"darkgray\"><font color=\"white\">$num</font></TD><TD><FONT POINT-SIZE=\"10\">$duration</FONT></TD></TR>";
         $label.='</TABLE>>';
-       
+
         $line1= loId_escape($previousEvent->loId).' -> '.loId_escape($event->loId);
         $line2="[$constraint label = $label ];\n";
         //$line3="[label = \"$num ($previousEvent->duration s)\" constraint=false];\n";
@@ -210,12 +237,12 @@ foreach ($durations as $event)
         {
             $clusters[(string)$eventlo->hasParent][]=loId_escape($event->loId)."[$node_style];\n";
         }
-        
+
         if ($previouslo!=null && $eventlo!=null && $previouslo->hasParent==$eventlo->hasParent)
             $clusters[(string)$eventlo->hasParent][]=$line1.$line2;
             else
             $graph_unclustered.=$line1.$line2;
-        } 
+        }
         $previousEvent=$event;
         $num++;
     }
@@ -223,7 +250,7 @@ foreach ($durations as $event)
 
 /*********************
  * Create clusters
- */ 
+ */
 
 foreach($clusters as $loidcluster=>$cluster)
 {
@@ -232,7 +259,7 @@ foreach($clusters as $loidcluster=>$cluster)
     $cluster_name= isset($clusterlo->loName)?$clusterlo->loName:loId_escape($loidcluster);
     $clusterid=loId_escape($loidcluster);
     $cluster_lines = implode("\t",$cluster);
-    
+
     $graph_clustered.=<<<cluster
 
 subgraph cluster_$clusterid {
@@ -311,7 +338,7 @@ else
 header("Content-Disposition: filename=\"course$courseid.user$userid.$format\"");
 }
 
-    
+
 $descriptorspec = array(
         0 => array("pipe", "r"),  // stdin es una tubería usada por el hijo para lectura
         1 => array("pipe", "w"),  // stdout es una tubería usada por el hijo para escritura
@@ -347,7 +374,7 @@ function cleanHTML($html)
     $url = $matches[1];
     preg_match('/src="([^"]+)/',$html,$matches);
     $img = $matches[1];
-   
+
 //     $html=str_replace(array('class="" onclick=""',
 //                             'class="iconlarge activityicon" alt=" " role="presentation"',
 //                             '<span class="instancename">',

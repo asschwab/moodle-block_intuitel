@@ -16,15 +16,16 @@
 
 /**
  * Version information for the block_intuitel plugin.
-*
-* @package    block
-* @subpackage intuitel
-* @copyright  2013 Eduvalab University of Valladolid http://www.eduvalab.uva.es
-* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
-
+ *
+ * @package    block_intuitel
+ * @subpackage intuitel
+ * @copyright  2013 Eduvalab University of Valladolid http://www.eduvalab.uva.es
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015021301;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2011011900;        // Requires this Moodle version
-$plugin->component = 'block_intuitel'; // Full name of the plugin (used for diagnostics)
+$plugin->version = 2015021301;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires = 2011011900;        // Requires this Moodle version.
+$plugin->component = 'block_intuitel'; // Full name of the plugin (used for diagnostics).
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release = 'v1.0';

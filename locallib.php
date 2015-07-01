@@ -1,4 +1,25 @@
 <?php
+// This file is part of INTUITEL http://www.intuitel.eu as an adaptor for Moodle http://moodle.org/
+//
+// INTUITEL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// INTUITEL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with INTUITEL for Moodle Adaptor.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Local functions for Intuitel for Moodle block
+ * @package    block_intuitel
+ * @author Juan Pablo de Castro, Elena Verdú.
+ * @copyright  2015 Intuitel Consortium
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 use intuitel\AccessDeniedException;
 use intuitel\idFactory;
 use intuitel\Intuitel;
@@ -12,15 +33,14 @@ use intuitel\UnknownLOException;
 use intuitel\IntuitelXMLSerializer;
 use intuitel\UrlLOFactory;
 use block_intuitel\event\tug_viewed;
-// require_once '../../config.php';
 require_once("model/LOFactory.php");
 require_once("model/intuitelLO.php");
 require_once('model/exceptions.php');
 require_once('impl/moodle/moodleAdaptor.php');
 require_once('model/intuitelAdaptor.php');
 require_once('model/intuitelController.php');
-require_once 'model/serializer.php';
-require_once 'model/VisitEvent.php';
+require_once('model/serializer.php');
+require_once('model/VisitEvent.php');
 
 /**
  * Check access rules to this LMS Adaptor from an INTUITEL service.
@@ -40,7 +60,7 @@ function check_access()
 	{
 	    $ip_array = explode("\n", $ips);
 	}
-	else 
+	else
 	{
 	    $ip_array = array();
 	}
@@ -61,10 +81,10 @@ function check_access()
 	 	    return true;
 	}
 	throw new AccessDeniedException("$remote_addr is not allowed to access this script. Please configure it at INTUITEL general settings.");
-	
+
 }
 /**
- * @author Alnitak at http://stackoverflow.com/questions/594112/matching-an-ip-to-a-cidr-mask-in-php5 
+ * @author Alnitak at http://stackoverflow.com/questions/594112/matching-an-ip-to-a-cidr-mask-in-php5
  * @param unknown $ip
  * @param unknown $range
  * @return boolean
@@ -113,13 +133,13 @@ function ipv6_match($ip_string, $cidrnet)
     $ip = inet_pton($ip_string);
     if (strlen($ip)==4)  // IPV4
         return false;
-    
+
     $binaryip=inet_to_bits($ip);
     $binarynet=inet_to_bits($net);
-    
+
     $ip_net_bits=substr($binaryip,0,$maskbits);
     $net_bits   =substr($binarynet,0,$maskbits);
-    
+
     if($ip_net_bits!==$net_bits)
         return false;
     else
@@ -137,8 +157,8 @@ function inet_to_bits($inet)
 }
 
 /**
- * 
- * @param string $xml 
+ *
+ * @param string $xml
  * @param array $aditional_params
  * @return mixed
  */
@@ -170,29 +190,29 @@ function submit_to_intuitel($xml, $aditional_params=array())
  * @param unknown $cmid
  * @param unknown $courseid
  * @param unknown $user_id
- * @param boolean $ignore_LO whether to send LoId to INTUITEL (ignored in simulation mode)
+ * @param boolean $ignorelo whether to send LoId to INTUITEL (ignored in simulation mode)
  * @return Ambigous <string, lang_string, unknown, mixed>
  */
-function forward_learner_update_request($cmid,$courseid,$user_id,$ignore_LO=false)
+function forward_learner_update_request($cmid,$courseid,$user_id,$ignorelo=false)
 {
     $debug = optional_param('debug', false, PARAM_BOOL);
     $debug_response = optional_param('debugresponse', null, PARAM_ALPHANUM); // this param instruct Intuitel mock objects to respond with a pre-recorded response.
-    
+
     $mmid = Intuitel::getIDFactory()->getNewMessageUUID();
-    if (empty($cmid)) { 
+    if (empty($cmid)) {
         $loId = Intuitel::getIDFactory()->getLoIdfromId('course', $courseid);
     } else {
         $loId = Intuitel::getIDFactory()->getLoIdfromId('module', $cmid);
     }
     // GET CURRENT USER id
     $userId = Intuitel::getIDFactory()->getUserId($user_id);
-    
+
     global $CFG,$log;
-    if ($ignore_LO==true && $CFG->block_intuitel_debug_server==true)
+    if ($ignorelo==true && $CFG->block_intuitel_debug_server==true)
     {
         $log->LogDebug("LMS send refreshing Learner message. Normal Learner procedure because in SIMULATED mode.");
     }
-    if ($ignore_LO==true && $CFG->block_intuitel_debug_server==false )// Ignore reporting to INTUITEL. Just send a Learner message with no LoId to repeat reasoning
+    if ($ignorelo==true && $CFG->block_intuitel_debug_server==false )// Ignore reporting to INTUITEL. Just send a Learner message with no LoId to repeat reasoning
                                                                         // But simulated mode need loid to be sent
     {
         $learnerUpdateMessage = '<INTUITEL>';
@@ -210,8 +230,8 @@ function forward_learner_update_request($cmid,$courseid,$user_id,$ignore_LO=fals
 
             $events = key_exists($userId->id, $events_user)?$events_user[$userId->id]:null;
         }
-        
-        if (!$CFG->block_intuitel_report_from_logevent || !$events)  
+
+        if (!$CFG->block_intuitel_report_from_logevent || !$events)
         {
             $event = new VisitEvent($userId,$loId,time());
             $events = array($event);
@@ -230,32 +250,32 @@ function forward_learner_update_request($cmid,$courseid,$user_id,$ignore_LO=fals
 $log->LogDebug("LMS sending: $learnerUpdateMessage");
     try {
         $return = submit_to_intuitel($learnerUpdateMessage, array('debugresponse' => $debug_response));
-       
+
         if ($debug)
             debugging("<p> Response from INTUITEL was: <p><pre>$return</pre>", DEBUG_DEVELOPER);
 $log->LogDebug("LearnerUpdate: INTUITEL response was: $return.");
 
         // parse and generate TUG AND LORE html and messages
         list($html,$intuitel_elements) = IntuitelController::ProcessUpdateLearnerRequest($return,$courseid);
-        
+
         if (count($intuitel_elements->Learner->Tug)>0)
         {
         $response = IntuitelXMLSerializer::getIntuitelXMLTemplate();
         foreach ($intuitel_elements->Learner->Tug as $tug)
         {
-            $mId=IntuitelXMLSerializer::get_required_attribute($tug,'mId');
+            $mid=IntuitelXMLSerializer::get_required_attribute($tug,'mId');
             $text = str_replace('<![CDATA[','',$tug->MData);
             $text = str_replace(']]>','',$tug->MData);
             $text = strip_tags($text);
-            
-            Intuitel::getAdaptorInstance()->logTugView($courseid,$user_id,$mId,substr('mId='.$mId.' '.$text,0,255));
-          
+
+            Intuitel::getAdaptorInstance()->logTugView($courseid,$user_id,$mid,substr('mId='.$mid.' '.$text,0,255));
+
             IntuitelController::addTUGInmediateResponse($response,
                                                         IntuitelXMLSerializer::get_required_attribute($tug,'uId'),
-                                                        IntuitelXMLSerializer::get_required_attribute($tug,'mId'),                                                                
+                                                        IntuitelXMLSerializer::get_required_attribute($tug,'mId'),
                                                         "OK");
         }
-        $xml=$response->asXML();   
+        $xml=$response->asXML();
         submit_to_intuitel($xml);
         $log->LogDebug("TUG inmediate response sent: $xml");
         }
@@ -264,9 +284,9 @@ $log->LogDebug("LearnerUpdate: INTUITEL response was: $return.");
         $response = IntuitelXMLSerializer::getIntuitelXMLTemplate();
         foreach ($intuitel_elements->Learner->Lore as $lore)
         {
-            $mId=IntuitelXMLSerializer::get_required_attribute($lore,'mId');
+            $mid=IntuitelXMLSerializer::get_required_attribute($lore,'mId');
             $lores=array();
-            
+
             foreach($lore->LorePrio as $lorePrio)
             {
                 try{
@@ -281,10 +301,10 @@ $log->LogDebug("LearnerUpdate: INTUITEL response was: $return.");
             }
             if (count($lores)) // log activity
             {
-                Intuitel::getAdaptorInstance()->logLoreView($courseid,$user_id,$mId,substr(join(',',$lores),0,255));
-                
+                Intuitel::getAdaptorInstance()->logLoreView($courseid,$user_id,$mid,substr(join(',',$lores),0,255));
+
             }
-            
+
             $xml=IntuitelController::addLOREInmediateResponse($response,
                                                                 IntuitelXMLSerializer::get_required_attribute($lore,'uId'),
                                                                 IntuitelXMLSerializer::get_required_attribute($lore,'mId'),
@@ -304,7 +324,7 @@ $log->LogDebug("LearnerUpdate: INTUITEL response was: $return.");
             $a->message = $exception->getMessage();
             $html = get_string('protocol_error_intuitel_node_malfunction','block_intuitel',$a);
 	        $log->LogError("INTUITEL error: $a->message Return value:". $return);
-        } 
+        }
         return $html;
 }
 function intuitel_get_service_endpoint()
@@ -354,9 +374,9 @@ function get_cm($cmid){
 
 /**
  * Retrieves the name of the Moodle type of module the coursemodule corresponds to (e.g. Forum, page, quiz,etc.)
- * @param int $cmid  : id of the course module 
- * @return string $module->name : name of the module 
- * @throws UnknownLOException 
+ * @param int $cmid  : id of the course module
+ * @return string $module->name : name of the module
+ * @throws UnknownLOException
  */
 function get_cm_type($cmid){
 	global $DB;
@@ -379,21 +399,21 @@ function get_parent_lang($lang){
 	$lang_parts=explode('_',$lang);
 	if(strlen($lang_parts[0])==2)
 		$parent_lang=$lang_parts[0];
-	else 
+	else
 		$parent_lang=null;
 	return $parent_lang;
 }
 
-/** 
+/**
  * Retrieves the forced language of the course of null if not forced language.
  * @param course_modinfo $course_info : course_modinfo object of the course
  * @return string|NULL $lang: forced language of the course or null if not language is forced
  */
-function get_course_lang($course_info){ 
+function get_course_lang($course_info){
 	$course=$course_info->get_course();
 	if($course->lang!= null)
 		$lang = get_parent_lang($course->lang);
-	else 
+	else
 		$lang= null;
 	return $lang;
 }
@@ -402,16 +422,16 @@ function get_course_lang($course_info){
  * Retrieves the completion status of the LO for an specific user (100 if this is completed and 0 if not), returns NULL if completion tracking is not enabled for that LO (or the entire course) and if the LO corresponds to a section or course LO
  * @author elever
  * @param cm_info $coursemodule_info : Moodle object with information of a module in a course
- * @param int $userid : moodle identifier of the user  
+ * @param int $userid : moodle identifier of the user
  * @return int $completion_status | null
  */
 function get_completion_status(\cm_info $coursemodule_info, $userid){
-	
+
 	$completion = new \completion_info($coursemodule_info->get_course());
 		if($completion->is_enabled($coursemodule_info)>0){//check if completion is enabled for a particular course and activity, returns 0 if it is not enabled, 1 if completion is enabled and is manual and 2 if automatic
-		
+
 			$completion_status=$completion->get_data($coursemodule_info,false, $userid); //this object has also information about viewed...is the row of the related table in the database
-			$completion_status=$completion_status->completionstate; 
+			$completion_status=$completion_status->completionstate;
 
 			if($completion_status>0){
 				$completion_status=100;  // moodle completion system retrieves 0 when the activity is not completed, 1 when the activity is completed (regardless of mark), 2 when the activity is completed with a passed mark, 3 when the activity is completed but with a fail mark
@@ -419,9 +439,9 @@ function get_completion_status(\cm_info $coursemodule_info, $userid){
 		}else{
 			$completion_status= null;
 		}
-	
+
 	return $completion_status;
-	
+
 }
 
 
@@ -430,25 +450,25 @@ function get_completion_status(\cm_info $coursemodule_info, $userid){
  * @author elever
  *
  * @param int $lo_id : id of the course
- * @param int $native_user_id : moodle identifier of the user  
+ * @param int $native_user_id : moodle identifier of the user
  * @return int $completion_status| NULL
  */
 function get_completion_status_course($lo_id, $native_user_id){
-	
+
 	$course=get_course($lo_id);
 	$completion = new \completion_info($course);
-	
+
 	global $DB;
-	
+
 	if($completion->is_enabled()>0){
-		
+
 		$criteria=$completion->get_criteria();
-		
+
 		if(!empty($criteria)){  //if criteria has been stablished for completing the course (in another case there is no course completion tracking)
 			//when a user completes a course this is registered in table course_completions
 			$timecompleted=$DB->get_field('course_completions','timecompleted', array('userid'=>$native_user_id,'course'=>$lo_id));
 			if($timecompleted==false) $completion_status=0;//course has not been completed
-			else 
+			else
 				$completion_status=100; // a record exists then the course has been completed
 		}else{
 			$completion_status=null;
@@ -462,16 +482,16 @@ function get_completion_status_course($lo_id, $native_user_id){
 /**
  * Retrieves the view/access status of the LO for an specific user (1 if the object has been viewed and 0 if not)
  * @author elever
- * @param int $cmid : identifier of the module in moodle 
- * @param int $userid : moodle identifier of the user  
- * @return boolean $access_status 
+ * @param int $cmid : identifier of the module in moodle
+ * @param int $userid : moodle identifier of the user
+ * @return boolean $access_status
  */
 function get_access_status($cmid, $userid){
-		
+
 		global $DB;
 		$sql = 'SELECT * FROM {log} WHERE cmid = :cmid AND userid= :userid AND action LIKE \'%view%\'';
 		$accesses=$DB->get_records_sql($sql, array('cmid'=>$cmid, 'userid'=>$userid));
-		
+
 		if(count($accesses)==0){
 			$access_status=false;
 		}else{
@@ -489,20 +509,20 @@ function get_access_status($cmid, $userid){
  */
 
 function get_access_status_course($courseid,$native_user_id){
-	
+
 	global $DB;
 	$sql ='SELECT * FROM {log} WHERE course = :courseid AND userid= :userid AND action LIKE \'%view%\'';
-	
+
 	$accesses=$DB->get_records_sql($sql, array('courseid'=>$courseid, 'userid'=>$native_user_id));
-	
+
 	if(count($accesses)==0){
 		$access_status=false;
 	}else{
 		$access_status=true;
 	}
-	
+
 	return $access_status;
-	
+
 }
 
 /**
@@ -510,41 +530,41 @@ function get_access_status_course($courseid,$native_user_id){
  * or if the user has not been graded.
  * @author elever
  * @param cm_info $coursemodule_info : Moodle object with information of a module in a course
- * @param int $userid : moodle identifier of the user  
- * @return array $grade_info | null 
+ * @param int $userid : moodle identifier of the user
+ * @return array $grade_info | null
  */
 function get_grade_info(\cm_info $coursemodule_info, $userid){
-		
+
 		global $DB,$CFG;
-		
+
 		require_once($CFG->dirroot.'/lib/gradelib.php');
 		require_once($CFG->dirroot.'/grade/querylib.php');
-		
+
 		// first check if the LO is gradable
 		$gradable=false;
 		$gradable_cms=grade_get_gradable_activities($coursemodule_info->course, $coursemodule_info->modname);
 		foreach ($gradable_cms as $gradable_cm){
 			if($gradable_cm->id==$coursemodule_info->id) $gradable=true;
 		}
-		
+
 		// Second, check if the user has been graded
 		if($gradable){
 			if(grade_is_user_graded_in_activity($coursemodule_info, $userid)){
-				
+
 				$grade_complete_info=\grade_get_grades($coursemodule_info->course,'mod',$coursemodule_info->modname,$coursemodule_info->instance, $userid);
 
 				$grade=array();
 				$grade['grade'] = $grade_complete_info->items[0]->grades[$userid]->grade;
 				$grade['grademax'] = $grade_complete_info->items[0]->grademax;
 				$grade['grademin'] = $grade_complete_info->items[0]->grademin;
-					
+
 			}else{   //user not graded yet
 				$grade=null;
 			}
 		}else{
 			$grade=null;
 		}
-		
+
 	return $grade;
 
 }
@@ -568,13 +588,13 @@ function get_grade_info_course($id_course, $userid){
 	$grade['grademin'] = $grade_info->item->grademin;
 	//TODO check result if user has not been graded in the course
 	return $grade;
-	
+
 }
 
 /**
- * From an array of native user ids, this function returns a new array containing only those ids belonging to online users 
+ * From an array of native user ids, this function returns a new array containing only those ids belonging to online users
  * @param array $native_userids
- * @return array of native user ids 
+ * @return array of native user ids
  */
 function get_online_users(array $native_userids){
 	global $DB,$CFG;
@@ -586,7 +606,7 @@ function get_online_users(array $native_userids){
 	}
 	$now=time();
 	$timefromsql = 100 * floor(($now - $timefrom) / 100); // Round to nearest 100 seconds for better query cache
-	
+
 	$params=array_merge($inparams,array($timefromsql));
 	$sql="select id from {user} where id $insql and lastaccess > ?
 	                           AND deleted = 0 ";
@@ -647,95 +667,95 @@ function generateHtmlForTugAndLore(SimpleXMLElement $intuitel_elements,$courseid
 {
 	global $OUTPUT,$CFG,$PAGE;
 	$html='';
-	
+
 foreach($intuitel_elements->Learner->Tug as $tug)
-{ 	
+{
 	$mtype = (string) $tug->MType;
-	$mId = IntuitelXMLSerializer::get_required_attribute($tug,'mId');
-	//escape dots from $mId for HTML
-	$mId=str_replace('.','_',$mId);
-	
+	$mid = IntuitelXMLSerializer::get_required_attribute($tug,'mId');
+	//escape dots from $mid for HTML
+	$mid=str_replace('.','_',$mid);
+
 	$tug_mdata =(string)$tug->MData;
 	// filter $tug_mdata to decorate loIds
 	$tug_mdata = add_loId_decorations($tug_mdata);
-	
+
 	if ($mtype=='1') //Simple message, not important
 	{
-	    $html .=    write_form_start($mId,$courseid).
+	    $html .=    write_form_start($mid,$courseid).
 		          '<p>'.$tug_mdata.'</p>'.
-	               write_form_end($mId,false);
-		$html= add_popup_notification($mId,$html);
-		$html= add_fadeIn_jscript($mId,$html);
+	               write_form_end($mid,false);
+		$html= add_popup_notification($mid,$html);
+		$html= add_fadeIn_jscript($mid,$html);
 	}
 	elseif ($mtype == '2') //Simple message, important
 	{
-	$html.= write_form_start($mId,$courseid).
+	$html.= write_form_start($mid,$courseid).
 	      // $OUTPUT->pix_icon('i/warning', 'Important!').'<p>'.$tug_mdata.'</p>';
 			'<p>'. $OUTPUT->pix_icon('warning','notice!','block_intuitel',array('width'=>32)).$tug_mdata.'</p>';
 	//TODO printing code.
-	$html .= write_form_end($mId,false);
-	$html = add_fadeIn_jscript($mId,$html);
-	$html = add_printing_code($mId,$html);
-	$html = add_popup_notification($mId,$html);
+	$html .= write_form_end($mid,false);
+	$html = add_fadeIn_jscript($mid,$html);
+	$html = add_printing_code($mid,$html);
+	$html = add_popup_notification($mid,$html);
 	}
 	elseif ($mtype== '3') //Simple question, to be answered Yes/No
 	{
-	$html.=  
-			write_form_start($mId,$courseid).
+	$html.=
+			write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>
 			<input type="RADIO" NAME="YesNo" value="Yes" checked >'.get_string('yes','moodle').'<br>
 			<input type="RADIO" NAME="YesNo" value="No" >'.get_string('no','moodle').'<br>'.
-			write_form_end($mId);
-	$html = add_fadeIn_jscript($mId,$html);
-	$html = add_popup_notification($mId,$html);
-	
+			write_form_end($mid);
+	$html = add_fadeIn_jscript($mid,$html);
+	$html = add_popup_notification($mid,$html);
+
 	}
 	elseif ($mtype == '4') //Single choice question, to be answered with one out of n alternatives
 	{
 	    $tug_mdata = change_select_into_radio($tug_mdata);
             $tug_mdata = filter_out_trailing_lang_mark($tug_mdata);
 		// TUG xml is supposed to be encoded as a W3C form
-		$html .= write_form_start($mId,$courseid).
+		$html .= write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>'.
-			write_form_end($mId);
-		$html = add_fadeIn_jscript($mId,$html);
-		$html = add_popup_notification($mId,$html);
-	
+			write_form_end($mid);
+		$html = add_fadeIn_jscript($mid,$html);
+		$html = add_popup_notification($mid,$html);
+
 	}
 	elseif ($mtype=='5') // Multiple choice question, to be answered with any number out of n alternatives
 	{
 		// TUG xml is supposed to be encoded as a W3C form
-		$html .= 	write_form_start($mId,$courseid).
+		$html .= 	write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>'.
-			write_form_end($mId);
-		$html = add_fadeIn_jscript($mId,$html);
-		$html = add_popup_notification($mId,$html);
-	
+			write_form_end($mid);
+		$html = add_fadeIn_jscript($mid,$html);
+		$html = add_popup_notification($mid,$html);
+
 	}
 	elseif ($mtype == '100')//Text question, to be answered with a natural language text
 	{
-		$html.=	write_form_start($mId,$courseid).
+		$html.=	write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>'.
 			'<textarea name="text" rows="10" cols="30"></textarea>'.
-			write_form_end($mId);
-		$html = add_fadeIn_jscript($mId,$html);
-		$html = add_popup_notification($mId,$html);
-	
+			write_form_end($mid);
+		$html = add_fadeIn_jscript($mid,$html);
+		$html = add_popup_notification($mid,$html);
+
 	}
 	elseif ($mtype == '200')//Audio message URI of the audio stream or audio file
 	{
-	    $html .= write_form_start($mId,$courseid);
+	    $html .= write_form_start($mid,$courseid);
 		$html .= format_text('You have a recommendation in this Sound Message: <a href="'.$tug_mdata.'">Sound</a>');
-		$html .= write_form_end($mId,false);
+		$html .= write_form_end($mid,false);
 	}
 	elseif ($mtype == '300')//Video message URI of the video stream or video file
 	{
-	    $html .= write_form_start($mId,$courseid);
+	    $html .= write_form_start($mid,$courseid);
 		$html .= format_text('You have a recommendation in this Video Message: <a href="'.$tug_mdata.'">Video message</a>');
-		$html .= write_form_end($mId,false);
-		
-		$html = add_popup_notification($mId,$html);
-		$html = add_fadeIn_jscript($mId,$html);
+		$html .= write_form_end($mid,false);
+
+		$html = add_popup_notification($mid,$html);
+		$html = add_fadeIn_jscript($mid,$html);
 	}
 } // different Tugs
 	/**
@@ -756,14 +776,14 @@ foreach($intuitel_elements->Learner->Tug as $tug)
 			$atts=$lorePrio->attributes();
 			$loId=(string)$atts['loId'];
 			$value = (string)$atts['value'];
-			
+
 			if(!$header_shown)
 			{
 				$html.=get_string('personalized_recommendations','block_intuitel');
 				$header_shown=true;
 			}
-				
-			
+
+
 			$cmid = $idFactory->getIdfromLoId(new LOId($loId));
 			$module_link = generateHtmlModuleLink($cmid);
 			$html.="<li loid=\"$loId\" id=\"intuitel_lore_$cmid\" >";
@@ -785,7 +805,7 @@ foreach($intuitel_elements->Learner->Tug as $tug)
 		$html.='</ul>';
 	}
 	$html.='</div>';
-	
+
 	return $html;
 }
 /**
@@ -815,7 +835,7 @@ function change_select_into_radio($tug_mdata)
     for ($i=0;$i<$ocurrences;$i++)
     {
     $value=$matches[1][$i];
-    $text=$matches[2][$i];  
+    $text=$matches[2][$i];
     $radio="<label style=\"white-space:nowrap\"><input type=\"radio\" name=\"$fieldname\" id=\"$fieldname\" value=\"$value\" style=\"word-wrap: break-word;\" /><span style=\"white-space:normal\">$text</span></label><br/>\n";
     $html.=$radio;
     }
@@ -823,20 +843,20 @@ function change_select_into_radio($tug_mdata)
     global $log;
     $log->LogDebug("TUG MData rewritten as:".$html);
     return $html;
-    
+
 }
 function generateHtmlModuleLink($cmid)
 {
     global $PAGE;
-   
+
     // TODO: this markup works only with modules
     $cm=get_cm($cmid);
     $courseinfo= get_fast_modinfo($cm->course);
     $cm_info=$courseinfo->get_cm($cmid);
-    
+
     $ids[]=$cmid;
-    	
-    	
+
+
     if ($cm_info->modname=='label')
     {
         //continue; // ignore label in the case LORE recommends one (illegally because Mapping won't report them.)
@@ -848,22 +868,22 @@ function generateHtmlModuleLink($cmid)
     }
     return $module_link;
 }
-function write_form_start($mId,$courseid)
+function write_form_start($mid,$courseid)
 {
 	global $CFG;
 	$wwwroot=$CFG->wwwroot;
 	return <<<html
-    <div id="INTUITEL_TUG_$mId">
-	    <form id="INTUITEL_TUG_FORM_$mId" target="_blank"
+    <div id="INTUITEL_TUG_$mid">
+	    <form id="INTUITEL_TUG_FORM_$mid" target="_blank"
 			 action="$wwwroot/blocks/intuitel/IntuitelProxy.php"
-			 onSubmit="return M.local_intuitel.submitTUG(Y,'$mId')" >
+			 onSubmit="return M.local_intuitel.submitTUG(Y,'$mid')" >
 			 <input type="HIDDEN" NAME="courseid" value="$courseid"/>
 html;
 }
-function write_form_end($mId,$showSubmit=true)
+function write_form_end($mid,$showSubmit=true)
 {
     $html=<<<html
-        <input type="HIDDEN" NAME="mId" value="$mId"/>
+        <input type="HIDDEN" NAME="mId" value="$mid"/>
         <input type="HIDDEN" NAME="_intuitel_intent" value="TUGRESPONSE"/>
         <input type="HIDDEN" NAME="_intuitel_TUG_cancel" value=""/>
 html;
@@ -878,11 +898,11 @@ html;
     $html.=<<<html
        <button type="SUBMIT" onclick="this.form._intuitel_TUG_cancel.value='true';" NAME="_intuitel_user_intent" value="cancel">$dismiss_str</input>
 	</form>
- <div id="INTUITEL_TUG_MSG_$mId"></div></div>
+ <div id="INTUITEL_TUG_MSG_$mid"></div></div>
 html;
     return $html;
 }
-function add_fadeIn_jscript($mId,$html)
+function add_fadeIn_jscript($mid,$html)
 {
 	return $html;
 	$jscript = <<<code
@@ -893,9 +913,9 @@ function add_fadeIn_jscript($mId,$html)
 	YUI().use("transition","panel","node", function(Y)
 	{
 
-   
-	var div=Y.one('#INTUITEL_TUG_$mId');
-	  Y.one('#INTUITEL_TUG_$mId').transition({
+
+	var div=Y.one('#INTUITEL_TUG_$mid');
+	  Y.one('#INTUITEL_TUG_$mid').transition({
 	    duration: 1, // seconds
 	    easing: 'ease-in',
 	    height: 0,
@@ -914,14 +934,14 @@ code;
  * Complement the html to allow printing using a new popup
  * @param string $html content to include in the printing
  */
-function add_printing_code($mId, $html)
+function add_printing_code($mid, $html)
 {
 	global $OUTPUT;
 	// TODO button and javascript for printing
-// 	$button = $OUTPUT->pix_icon('t/print', 'Print'); 
+// 	$button = $OUTPUT->pix_icon('t/print', 'Print');
  	return $html;
 }
-function add_popup_notification($mId,$html)
+function add_popup_notification($mid,$html)
 {
 	global $PAGE;
 	$url='';
@@ -930,7 +950,7 @@ function add_popup_notification($mId,$html)
 	$strstaymessage = 'Close';
 	$jscode=<<<code
 			<script type="text/javascript">
-				M.local_intuitel.showTUGNotification(Y,"$mId"); 
+				M.local_intuitel.showTUGNotification(Y,"$mid");
 			</script>
 code;
 	return $html.$jscode;
@@ -952,7 +972,7 @@ function add_loId_decorations($tug_mdata)
 	   $module_link = generateHtmlModuleLink($cmid);
     else
         $module_link = '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$cmid.'">'.$lo->loName.'</a>';
-	
+
 	$tug_mdata=str_replace($result,$module_link,$tug_mdata);
     }
     return $tug_mdata;
@@ -966,15 +986,15 @@ function add_loId_decorations($tug_mdata)
  */
 function get_input_message($methods='POST,GET')
 {
-	
+
     // Parse GET parameters
     $http_method = $_SERVER ['REQUEST_METHOD'];
     if (stripos($methods, $http_method) === false)
     {
         header("Allow: $methods",true);
         throw new ProtocolErrorException ( "Check Data Model. This ServicePoint is not for $http_method-ing Information!!",405 );
-    } 
-    
+    }
+
 	if ($http_method =='POST')
 	{
 		//Check content_type
@@ -984,7 +1004,7 @@ function get_input_message($methods='POST,GET')
 			throw new ProtocolErrorException("Payload must be application/xml or text/xml but '$content_type' was received",415);
 		return file_get_contents('php://input');
 	}
-	else 
+	else
 	if ($http_method =='GET')
 	{
 		return required_param('xml', PARAM_RAW);
@@ -1015,5 +1035,3 @@ function exception_handler($exception)
 	$log->LogError("Exception found:".$exception->getMessage()." Trace:".$exception->getTraceAsString());
 	die($exception->getMessage());
 }
-
-?>

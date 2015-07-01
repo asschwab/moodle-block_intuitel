@@ -1,11 +1,24 @@
 <?php
-// This file is part of Intuitel
+// This file is part of INTUITEL http://www.intuitel.eu as an adaptor for Moodle http://moodle.org/
 //
+// INTUITEL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// INTUITEL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with INTUITEL for Moodle Adaptor.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The block_intuitel abstract base event.
+ * The block_intuitel tug viewed event.
  *
  * @package    block_intuitel
+ * @author Juan Pablo de Castro, Elena Verdú.
  * @copyright  2015 Juan Pablo de Castro
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,14 +43,16 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tug_dismissed extends base {
+
     /**
-     * 
+     * Factory method for events
      * @param int $courseid
      * @param int $userid
-     * @param string $mId
-     * @return unknown
+     * @param string $mid
+     * @param array $info
+     * @return lore_viewed
      */
-    public static function create_from_parts($courseid,$userid, $mId,$info) {
+    public static function create_from_parts($courseid, $userid, $mid, $info) {
         $data = array(
             'relateduserid' => $userid,
             'context' => \context_course::instance($courseid),
@@ -45,12 +60,12 @@ class tug_dismissed extends base {
             'course' => $courseid,
             'other' => array(
                 'info' => $info,
-                'mid' => $mId,
+                'mid' => $mid,
             ),
         );
-        /** @var tug_dismissed $event */
+        /* @var tug_dismissed $event */
         $event = self::create($data);
-        $event->set_legacy_logdata('TUG_RESPONSE', $info, '');  
+        $event->set_legacy_logdata('TUG_RESPONSE', $info, '');
         return $event;
     }
 
@@ -78,9 +93,8 @@ class tug_dismissed extends base {
      */
     public function get_description() {
         return "The user with id '$this->userid' dismissed a TUG message with mid '$this->mid' " .
-            "in the course '$this->courseid'.";
+                "in the course '$this->courseid'.";
     }
-
 
     /**
      * Custom validation.
@@ -101,4 +115,5 @@ class tug_dismissed extends base {
             throw new \coding_exception('The \'info\' value must be set in other.');
         }
     }
+
 }

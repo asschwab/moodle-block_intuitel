@@ -1,4 +1,4 @@
-<?phps
+<?php
 $string['pluginname']=$string['intuitel']='Automatischer Tutor';
 $string['error_not_in_course']='Der Intuitel Block muss in einem Kurs platziert werden.';
 $string['welcome']='<a href="http://www.intuitel.eu/">INTUITEL</a>.';
