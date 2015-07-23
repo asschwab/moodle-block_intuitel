@@ -445,7 +445,7 @@ class IntuitelController
 			}else{ //check if the learner is logged in
 
 				$active_user=array();
-				$active_user=get_online_users(array($user->id));
+				$active_user=intuitel_get_online_users(array($user->id));
 				if(!empty($active_user))
 				{
 

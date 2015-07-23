@@ -24,7 +24,7 @@
  */
 require_once('model/exceptions.php');
 require_once('locallib.php');
-disable_moodle_page_exception_handler();
+intuitel_disable_moodle_page_exception_handler();
 use intuitel\ProtocolErrorException;
 
 $pathinfo = $_SERVER ['PATH_INFO'];

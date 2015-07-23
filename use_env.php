@@ -32,12 +32,12 @@ require_once('model/serializer.php');
 require_once('model/exceptions.php');
 require_once('model/intuitelController.php');
 
-disable_moodle_page_exception_handler();
+intuitel_disable_moodle_page_exception_handler();
 
-check_access();
+intuitel_check_access();
 $params = array();
 
-$xml = get_input_message();
+$xml = intuitel_get_input_message();
 global $log;
 $log->LogDebug("USE_ENV request received: $xml");
 

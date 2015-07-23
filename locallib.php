@@ -52,7 +52,7 @@ require_once('model/VisitEvent.php');
  * @see settings.php
  * @return true if access is granted
  */
-function check_access()
+function intuitel_check_access()
 {
 	global $CFG;
 	$ips=	$CFG->block_intuitel_allowed_intuitel_ips;
@@ -75,9 +75,9 @@ function check_access()
 	 		return true;
 // 	 	if ($remote_addr == "::1")
 // 	 	    $remote_addr = '127.0.0.1';
-	 	if (ipv4_match($remote_addr, $ip))
+	 	if (intuitel_ipv4_match($remote_addr, $ip))
 	 	    return true;
-	 	if (ipv6_match($remote_addr, $ip))
+	 	if (intuitel_ipv6_match($remote_addr, $ip))
 	 	    return true;
 	}
 	throw new AccessDeniedException("$remote_addr is not allowed to access this script. Please configure it at INTUITEL general settings.");
@@ -89,7 +89,7 @@ function check_access()
  * @param unknown $range
  * @return boolean
  */
-function ipv4_match($ip, $cidrnet)
+function intuitel_ipv4_match($ip, $cidrnet)
 {
     if ($ip=='::1')
         $ip='127.0.0.1';
@@ -115,7 +115,7 @@ function ipv4_match($ip, $cidrnet)
  * @param unknown $cidrnet
  * @return boolean
  */
-function ipv6_match($ip_string, $cidrnet)
+function intuitel_ipv6_match($ip_string, $cidrnet)
 {
     $parts= explode('/', $cidrnet);
     if (count($parts)!=2)
@@ -134,8 +134,8 @@ function ipv6_match($ip_string, $cidrnet)
     if (strlen($ip)==4)  // IPV4
         return false;
 
-    $binaryip=inet_to_bits($ip);
-    $binarynet=inet_to_bits($net);
+    $binaryip=intuitel_inet_to_bits($ip);
+    $binarynet=intuitel_inet_to_bits($net);
 
     $ip_net_bits=substr($binaryip,0,$maskbits);
     $net_bits   =substr($binarynet,0,$maskbits);
@@ -145,7 +145,7 @@ function ipv6_match($ip_string, $cidrnet)
     else
         return true;
 }
-function inet_to_bits($inet)
+function intuitel_inet_to_bits($inet)
 {
     $unpacked = unpack('A16', $inet);
     $unpacked = str_split($unpacked[1]);
@@ -162,7 +162,7 @@ function inet_to_bits($inet)
  * @param array $aditional_params
  * @return mixed
  */
-function submit_to_intuitel($xml, $aditional_params=array())
+function intuitel_submit_to_intuitel($xml, $aditional_params=array())
 {
 	$intuitelEndPoint = intuitel_get_service_endpoint();
 
@@ -193,7 +193,7 @@ function submit_to_intuitel($xml, $aditional_params=array())
  * @param boolean $ignorelo whether to send LoId to INTUITEL (ignored in simulation mode)
  * @return Ambigous <string, lang_string, unknown, mixed>
  */
-function forward_learner_update_request($cmid,$courseid,$user_id,$ignorelo=false)
+function intuitel_forward_learner_update_request($cmid,$courseid,$user_id,$ignorelo=false)
 {
     $debug = optional_param('debug', false, PARAM_BOOL);
     $debug_response = optional_param('debugresponse', null, PARAM_ALPHANUM); // this param instruct Intuitel mock objects to respond with a pre-recorded response.
@@ -249,7 +249,7 @@ function forward_learner_update_request($cmid,$courseid,$user_id,$ignorelo=false
     $return = "No response from Intuitel";
 $log->LogDebug("LMS sending: $learnerUpdateMessage");
     try {
-        $return = submit_to_intuitel($learnerUpdateMessage, array('debugresponse' => $debug_response));
+        $return = intuitel_submit_to_intuitel($learnerUpdateMessage, array('debugresponse' => $debug_response));
 
         if ($debug)
             debugging("<p> Response from INTUITEL was: <p><pre>$return</pre>", DEBUG_DEVELOPER);
@@ -276,7 +276,7 @@ $log->LogDebug("LearnerUpdate: INTUITEL response was: $return.");
                                                         "OK");
         }
         $xml=$response->asXML();
-        submit_to_intuitel($xml);
+        intuitel_submit_to_intuitel($xml);
         $log->LogDebug("TUG inmediate response sent: $xml");
         }
         if (count($intuitel_elements->Learner->Lore)>0)
@@ -311,7 +311,7 @@ $log->LogDebug("LearnerUpdate: INTUITEL response was: $return.");
                                                                 "OK");
         }
         $xml=$response->asXML();
-        submit_to_intuitel($xml);
+        intuitel_submit_to_intuitel($xml);
         }
         $html = '<div>' . $html . '</div>';
         }
@@ -341,7 +341,7 @@ function intuitel_get_service_endpoint()
 	return $intuitelEndPoint;
 }
 
-function getMediaType($content){
+function intuitel_getMediaType($content){
 	// add an i to the end of the pattern so no upper and lower case is distinguised
 	$mediatype='';
 	if(preg_match('/<img src/i',$content)==1)$mediatype='image';
@@ -354,7 +354,7 @@ function getMediaType($content){
  * @return stdClass $section : object with information of a section (corresponding to a row in table course_sections)
  */
 
-function get_moodle_section($sectionid){
+function intuitel_get_moodle_section($sectionid){
 	global $DB;
 	$section = $DB->get_record('course_sections',array('id'=>$sectionid));
 	return $section;
@@ -365,7 +365,7 @@ function get_moodle_section($sectionid){
  * @param int $cmid : id of the course_module object
  * @return stdClass $cm : object with the information of the course_module object (corresponding to a row in the table course_modules)
  */
-function get_cm($cmid){
+function intuitel_get_cm($cmid){
 	global $DB;
 	$cm = $DB->get_record('course_modules',array('id'=>$cmid));
 	return $cm;
@@ -378,7 +378,7 @@ function get_cm($cmid){
  * @return string $module->name : name of the module
  * @throws UnknownLOException
  */
-function get_cm_type($cmid){
+function intuitel_get_cm_type($cmid){
 	global $DB;
 	if(!$cm = $DB->get_record('course_modules',array('id'=>$cmid)))
 		{
@@ -395,7 +395,7 @@ function get_cm_type($cmid){
  * @return string $parent_lang|NULL :  string of two characters with ISO-639-1 code of parent language, null if the parent part of the code does not have two characters as specified in ISO-639-1
  */
 
-function get_parent_lang($lang){
+function intuitel_get_parent_lang($lang){
 	$lang_parts=explode('_',$lang);
 	if(strlen($lang_parts[0])==2)
 		$parent_lang=$lang_parts[0];
@@ -409,10 +409,10 @@ function get_parent_lang($lang){
  * @param course_modinfo $course_info : course_modinfo object of the course
  * @return string|NULL $lang: forced language of the course or null if not language is forced
  */
-function get_course_lang($course_info){
+function intuitel_get_course_lang($course_info){
 	$course=$course_info->get_course();
 	if($course->lang!= null)
-		$lang = get_parent_lang($course->lang);
+		$lang = intuitel_get_parent_lang($course->lang);
 	else
 		$lang= null;
 	return $lang;
@@ -425,7 +425,7 @@ function get_course_lang($course_info){
  * @param int $userid : moodle identifier of the user
  * @return int $completion_status | null
  */
-function get_completion_status(\cm_info $coursemodule_info, $userid){
+function intuitel_get_completion_status(\cm_info $coursemodule_info, $userid){
 
 	$completion = new \completion_info($coursemodule_info->get_course());
 		if($completion->is_enabled($coursemodule_info)>0){//check if completion is enabled for a particular course and activity, returns 0 if it is not enabled, 1 if completion is enabled and is manual and 2 if automatic
@@ -453,7 +453,7 @@ function get_completion_status(\cm_info $coursemodule_info, $userid){
  * @param int $native_user_id : moodle identifier of the user
  * @return int $completion_status| NULL
  */
-function get_completion_status_course($lo_id, $native_user_id){
+function intuitel_get_completion_status_course($lo_id, $native_user_id){
 
 	$course=get_course($lo_id);
 	$completion = new \completion_info($course);
@@ -486,7 +486,7 @@ function get_completion_status_course($lo_id, $native_user_id){
  * @param int $userid : moodle identifier of the user
  * @return boolean $access_status
  */
-function get_access_status($cmid, $userid){
+function intuitel_get_access_status($cmid, $userid){
 
 		global $DB;
 		$sql = 'SELECT * FROM {log} WHERE cmid = :cmid AND userid= :userid AND action LIKE \'%view%\'';
@@ -508,7 +508,7 @@ function get_access_status($cmid, $userid){
  * @return boolean $access_status | null
  */
 
-function get_access_status_course($courseid,$native_user_id){
+function intuitel_get_access_status_course($courseid,$native_user_id){
 
 	global $DB;
 	$sql ='SELECT * FROM {log} WHERE course = :courseid AND userid= :userid AND action LIKE \'%view%\'';
@@ -533,7 +533,7 @@ function get_access_status_course($courseid,$native_user_id){
  * @param int $userid : moodle identifier of the user
  * @return array $grade_info | null
  */
-function get_grade_info(\cm_info $coursemodule_info, $userid){
+function intuitel_get_grade_info(\cm_info $coursemodule_info, $userid){
 
 		global $DB,$CFG;
 
@@ -577,7 +577,7 @@ function get_grade_info(\cm_info $coursemodule_info, $userid){
  * @param int $userid : moodle identifier of the user
  * @return array $grade_info | null
  */
-function get_grade_info_course($id_course, $userid){
+function intuitel_get_grade_info_course($id_course, $userid){
 	global $CFG;
 	require_once($CFG->dirroot.'/lib/gradelib.php');
 	require_once($CFG->dirroot.'/grade/querylib.php');
@@ -596,7 +596,7 @@ function get_grade_info_course($id_course, $userid){
  * @param array $native_userids
  * @return array of native user ids
  */
-function get_online_users(array $native_userids){
+function intuitel_get_online_users(array $native_userids){
 	global $DB,$CFG;
 	$online_users= array();
 	list($insql,$inparams)=$DB->get_in_or_equal($native_userids);
@@ -663,7 +663,7 @@ URI of the video stream or video file
  * @param SimpleXMLElement $doc
  * @return string HTML
  */
-function generateHtmlForTugAndLore(SimpleXMLElement $intuitel_elements,$courseid)
+function intuitel_generateHtmlForTugAndLore(SimpleXMLElement $intuitel_elements,$courseid)
 {
 	global $OUTPUT,$CFG,$PAGE;
 	$html='';
@@ -677,85 +677,85 @@ foreach($intuitel_elements->Learner->Tug as $tug)
 
 	$tug_mdata =(string)$tug->MData;
 	// filter $tug_mdata to decorate loIds
-	$tug_mdata = add_loId_decorations($tug_mdata);
+	$tug_mdata = intuitel_add_loId_decorations($tug_mdata);
 
 	if ($mtype=='1') //Simple message, not important
 	{
-	    $html .=    write_form_start($mid,$courseid).
+	    $html .=    intuitel_write_form_start($mid,$courseid).
 		          '<p>'.$tug_mdata.'</p>'.
-	               write_form_end($mid,false);
-		$html= add_popup_notification($mid,$html);
-		$html= add_fadeIn_jscript($mid,$html);
+	               intuitel_write_form_end($mid,false);
+		$html= intuitel_add_popup_notification($mid,$html);
+		$html= intuitel_add_fadeIn_jscript($mid,$html);
 	}
-	elseif ($mtype == '2') //Simple message, important
+	else if ($mtype == '2') //Simple message, important
 	{
-	$html.= write_form_start($mid,$courseid).
+	$html.= intuitel_write_form_start($mid,$courseid).
 	      // $OUTPUT->pix_icon('i/warning', 'Important!').'<p>'.$tug_mdata.'</p>';
 			'<p>'. $OUTPUT->pix_icon('warning','notice!','block_intuitel',array('width'=>32)).$tug_mdata.'</p>';
 	//TODO printing code.
-	$html .= write_form_end($mid,false);
-	$html = add_fadeIn_jscript($mid,$html);
-	$html = add_printing_code($mid,$html);
-	$html = add_popup_notification($mid,$html);
+	$html .= intuitel_write_form_end($mid,false);
+	$html = intuitel_add_fadeIn_jscript($mid,$html);
+	$html = intuitel_add_printing_code($mid,$html);
+	$html = intuitel_add_popup_notification($mid,$html);
 	}
-	elseif ($mtype== '3') //Simple question, to be answered Yes/No
+	else if ($mtype== '3') //Simple question, to be answered Yes/No
 	{
 	$html.=
-			write_form_start($mid,$courseid).
+			intuitel_write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>
 			<input type="RADIO" NAME="YesNo" value="Yes" checked >'.get_string('yes','moodle').'<br>
 			<input type="RADIO" NAME="YesNo" value="No" >'.get_string('no','moodle').'<br>'.
-			write_form_end($mid);
-	$html = add_fadeIn_jscript($mid,$html);
-	$html = add_popup_notification($mid,$html);
+			intuitel_write_form_end($mid);
+	$html = intuitel_add_fadeIn_jscript($mid,$html);
+	$html = intuitel_add_popup_notification($mid,$html);
 
 	}
-	elseif ($mtype == '4') //Single choice question, to be answered with one out of n alternatives
+	else if ($mtype == '4') //Single choice question, to be answered with one out of n alternatives
 	{
-	    $tug_mdata = change_select_into_radio($tug_mdata);
-            $tug_mdata = filter_out_trailing_lang_mark($tug_mdata);
+	    $tug_mdata = intuitel_change_select_into_radio($tug_mdata);
+            $tug_mdata = intuitel_filter_out_trailing_lang_mark($tug_mdata);
 		// TUG xml is supposed to be encoded as a W3C form
-		$html .= write_form_start($mid,$courseid).
+		$html .= intuitel_write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>'.
-			write_form_end($mid);
-		$html = add_fadeIn_jscript($mid,$html);
-		$html = add_popup_notification($mid,$html);
+			intuitel_write_form_end($mid);
+		$html = intuitel_add_fadeIn_jscript($mid,$html);
+		$html = intuitel_add_popup_notification($mid,$html);
 
 	}
-	elseif ($mtype=='5') // Multiple choice question, to be answered with any number out of n alternatives
+	else if ($mtype=='5') // Multiple choice question, to be answered with any number out of n alternatives
 	{
 		// TUG xml is supposed to be encoded as a W3C form
-		$html .= 	write_form_start($mid,$courseid).
+		$html .= 	intuitel_write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>'.
-			write_form_end($mid);
-		$html = add_fadeIn_jscript($mid,$html);
-		$html = add_popup_notification($mid,$html);
+			intuitel_write_form_end($mid);
+		$html = intuitel_add_fadeIn_jscript($mid,$html);
+		$html = intuitel_add_popup_notification($mid,$html);
 
 	}
-	elseif ($mtype == '100')//Text question, to be answered with a natural language text
+	else if ($mtype == '100')//Text question, to be answered with a natural language text
 	{
-		$html.=	write_form_start($mid,$courseid).
+		$html.=	intuitel_write_form_start($mid,$courseid).
 			'<p>'.$tug_mdata.'</p>'.
 			'<textarea name="text" rows="10" cols="30"></textarea>'.
-			write_form_end($mid);
-		$html = add_fadeIn_jscript($mid,$html);
-		$html = add_popup_notification($mid,$html);
+			intuitel_write_form_end($mid);
+		$html = intuitel_add_fadeIn_jscript($mid,$html);
+		$html = intuitel_add_popup_notification($mid,$html);
 
 	}
-	elseif ($mtype == '200')//Audio message URI of the audio stream or audio file
+	else if ($mtype == '200')//Audio message URI of the audio stream or audio file
 	{
-	    $html .= write_form_start($mid,$courseid);
+	    $html .= intuitel_write_form_start($mid,$courseid);
 		$html .= format_text('You have a recommendation in this Sound Message: <a href="'.$tug_mdata.'">Sound</a>');
-		$html .= write_form_end($mid,false);
+		$html .= intuitel_write_form_end($mid,false);
 	}
-	elseif ($mtype == '300')//Video message URI of the video stream or video file
+	else if ($mtype == '300')//Video message URI of the video stream or video file
 	{
-	    $html .= write_form_start($mid,$courseid);
+	    $html .= intuitel_write_form_start($mid,$courseid);
 		$html .= format_text('You have a recommendation in this Video Message: <a href="'.$tug_mdata.'">Video message</a>');
-		$html .= write_form_end($mid,false);
+		$html .= intuitel_write_form_end($mid,false);
 
-		$html = add_popup_notification($mid,$html);
-		$html = add_fadeIn_jscript($mid,$html);
+		$html = intuitel_add_popup_notification($mid,$html);
+		$html = intuitel_add_fadeIn_jscript($mid,$html);
 	}
 } // different Tugs
 	/**
@@ -785,7 +785,7 @@ foreach($intuitel_elements->Learner->Tug as $tug)
 
 
 			$cmid = $idFactory->getIdfromLoId(new LOId($loId));
-			$module_link = generateHtmlModuleLink($cmid);
+			$module_link = intuitel_generateHtmlModuleLink($cmid);
 			$html.="<li loid=\"$loId\" id=\"intuitel_lore_$cmid\" >";
 			if ($module_link)
 				{
@@ -811,7 +811,7 @@ foreach($intuitel_elements->Learner->Tug as $tug)
 /**
  * Patch for filtering out the annoying @en sufix in some mLP options.
  */
-function filter_out_trailing_lang_mark($tug_mdata){
+function intuitel_filter_out_trailing_lang_mark($tug_mdata){
     $tug_mdata_filtered = str_replace ("@en", "", $tug_mdata);
     return $tug_mdata_filtered;
 }
@@ -819,7 +819,7 @@ function filter_out_trailing_lang_mark($tug_mdata){
  * Patch for rendering select TUGs with radio. Valid only for INTUITEL implemented by march 2015
  * @param unknown $tug_mdata
  */
-function change_select_into_radio($tug_mdata)
+function intuitel_change_select_into_radio($tug_mdata)
 {
     $matches=array();
 //     preg_match('/(.*)<select name=\"(.*)\[\]\".*<option.+value=\"(.*)\".*>(.*)<\/option>.*<option.+value=\"(.*)\".*>(.*)<\/option>.*<\/select>(.*)/', $tug_mdata,$matches);
@@ -845,12 +845,12 @@ function change_select_into_radio($tug_mdata)
     return $html;
 
 }
-function generateHtmlModuleLink($cmid)
+function intuitel_generateHtmlModuleLink($cmid)
 {
     global $PAGE;
 
     // TODO: this markup works only with modules
-    $cm=get_cm($cmid);
+    $cm=intuitel_get_cm($cmid);
     $courseinfo= get_fast_modinfo($cm->course);
     $cm_info=$courseinfo->get_cm($cmid);
 
@@ -868,7 +868,7 @@ function generateHtmlModuleLink($cmid)
     }
     return $module_link;
 }
-function write_form_start($mid,$courseid)
+function intuitel_write_form_start($mid,$courseid)
 {
 	global $CFG;
 	$wwwroot=$CFG->wwwroot;
@@ -880,7 +880,7 @@ function write_form_start($mid,$courseid)
 			 <input type="HIDDEN" NAME="courseid" value="$courseid"/>
 html;
 }
-function write_form_end($mid,$showSubmit=true)
+function intuitel_write_form_end($mid,$showSubmit=true)
 {
     $html=<<<html
         <input type="HIDDEN" NAME="mId" value="$mid"/>
@@ -902,7 +902,7 @@ html;
 html;
     return $html;
 }
-function add_fadeIn_jscript($mid,$html)
+function intuitel_add_fadeIn_jscript($mid,$html)
 {
 	return $html;
 	$jscript = <<<code
@@ -934,14 +934,14 @@ code;
  * Complement the html to allow printing using a new popup
  * @param string $html content to include in the printing
  */
-function add_printing_code($mid, $html)
+function intuitel_add_printing_code($mid, $html)
 {
 	global $OUTPUT;
 	// TODO button and javascript for printing
 // 	$button = $OUTPUT->pix_icon('t/print', 'Print');
  	return $html;
 }
-function add_popup_notification($mid,$html)
+function intuitel_add_popup_notification($mid,$html)
 {
 	global $PAGE;
 	$url='';
@@ -955,7 +955,7 @@ function add_popup_notification($mid,$html)
 code;
 	return $html.$jscode;
 }
-function add_loId_decorations($tug_mdata)
+function intuitel_add_loId_decorations($tug_mdata)
 {
     global $CFG;
     $tug_mdata= trim($tug_mdata);
@@ -969,7 +969,7 @@ function add_loId_decorations($tug_mdata)
     $lo = Intuitel::getAdaptorInstance()->createLO(new LOId($result));
     $type = Intuitel::getIDFactory()->getType(new LOId($result));
     if ($type!='section' && $type!='course')
-	   $module_link = generateHtmlModuleLink($cmid);
+	   $module_link = intuitel_generateHtmlModuleLink($cmid);
     else
         $module_link = '<a href="'.$CFG->wwwroot.'/course/view.php?id='.$cmid.'">'.$lo->loName.'</a>';
 
@@ -984,7 +984,7 @@ function add_loId_decorations($tug_mdata)
  * @param $methods string to allow HTTP method. A list of allowed methods. i.e: 'POST,GET'
  * @return string xml message
  */
-function get_input_message($methods='POST,GET')
+function intuitel_get_input_message($methods='POST,GET')
 {
 
     // Parse GET parameters
@@ -1014,14 +1014,14 @@ function get_input_message($methods='POST,GET')
  * Disable moodle exception hadler and page formatting
  * and set a default context for $PAGE->context
  */
-function disable_moodle_page_exception_handler()
+function intuitel_disable_moodle_page_exception_handler()
 {
 	ob_start();
-	set_exception_handler('exception_handler');
+	set_exception_handler('intuitel_exception_handler');
 	global $PAGE;
 	$PAGE->set_context(context_system::instance());
 }
-function exception_handler($exception)
+function intuitel_exception_handler($exception)
 {
 	//ob_end_clean(); // JPC: uncomment it if you want to avoid debugging information in the response
 	$code = 500;

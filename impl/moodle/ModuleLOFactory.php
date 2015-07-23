@@ -44,11 +44,11 @@ abstract class ModuleLOFactory extends LOFactory {
     function createLO(LOId $loId) {
         // get the id of the section in Moodle
         $id = Intuitel::getIDFactory()->getIdfromLoId($loId);
-        $cm = get_cm($id);
+        $cm = intuitel_get_cm($id);
         if ($cm == false) {
             throw new UnknownLOException;
         } else {
-            $courseinfo = get_fast_modinfo(get_cm($id)->course);
+            $courseinfo = get_fast_modinfo(intuitel_get_cm($id)->course);
             $cm_info = $courseinfo->get_cm($id);
 
             //set the data of the object from Moodle internal data
@@ -188,7 +188,7 @@ abstract class ModuleLOFactory extends LOFactory {
 
     private function getLang($rawData) {
         $course_info = $rawData->get_modinfo();
-        $lang = get_course_lang($course_info);
+        $lang = intuitel_get_course_lang($course_info);
         return $lang;
     }
 

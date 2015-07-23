@@ -31,13 +31,13 @@ require_once("model/intuitelLO.php");
 require_once('model/serializer.php');
 require_once('model/exceptions.php');
 
-disable_moodle_page_exception_handler();
+intuitel_disable_moodle_page_exception_handler();
 
-check_access();
+intuitel_check_access();
 $params = array();
 $serializer = new IntuitelXMLSerializer();
 
-$xml = get_input_message();
+$xml = intuitel_get_input_message();
 global $log;
 $log->LogDebug("USE_PERF request received: $xml");
 $response = IntuitelController::ProcessUsePerfRequest($xml);

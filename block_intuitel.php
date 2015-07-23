@@ -243,7 +243,7 @@ class block_intuitel extends block_base {
 
     public function generate_inline_code($args) {
         global $USER;
-        $html = forward_learner_update_request($args['cmid'], $args['courseid'], $USER->id);
+        $html = intuitel_forward_learner_update_request($args['cmid'], $args['courseid'], $USER->id);
 
         return $html;
     }

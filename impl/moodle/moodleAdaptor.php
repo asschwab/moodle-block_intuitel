@@ -188,7 +188,7 @@ class moodleAdaptor extends IntuitelAdaptor {
         }
 
         if ($filter_offline_users) {//filter out those users who are not currently online
-            $native_activeuserids = get_online_users($native_userids);
+            $native_activeuserids = intuitel_get_online_users($native_userids);
         } else {
             $native_activeuserids = $native_userids;
         }
@@ -404,7 +404,7 @@ class moodleAdaptor extends IntuitelAdaptor {
         }
 
         if ($filter_offline_users) {//filter out those users who are not currently online
-            $native_activeuserids = get_online_users($native_userids);
+            $native_activeuserids = intuitel_get_online_users($native_userids);
         } else {
             $native_activeuserids = $native_userids;
         }
@@ -467,7 +467,7 @@ class moodleAdaptor extends IntuitelAdaptor {
         }
 
         if ($filter_offline_users) {//filter out those users who are not currently online
-            $native_activeuserids = get_online_users($native_userids);
+            $native_activeuserids = intuitel_get_online_users($native_userids);
         } else {
             $native_activeuserids = $native_userids;
         }
@@ -665,13 +665,13 @@ class moodleAdaptor extends IntuitelAdaptor {
         if (get_class($lo) == 'intuitel\SectionLO') {
             $courseLOid = $lo->getParent();
             $courseid = Intuitel::getIDFactory()->getIdfromLoId($courseLOid);
-            $useData['accessed'] = get_access_status_course($courseid, $native_user_id);
+            $useData['accessed'] = intuitel_get_access_status_course($courseid, $native_user_id);
         } else if (get_class($lo) == 'intuitel\CourseLO') { //the lo is the CourseLO, get the completion, accessed and grade data
             $loId = $lo->getloId();
             $lo_id = Intuitel::getIDFactory()->getIdfromLoId($loId);
-            $useData['accessed'] = get_access_status_course($lo_id, $native_user_id);
-            $useData['completion'] = get_completion_status_course($lo_id, $native_user_id);
-            get_grade_info_course($lo_id, $native_user_id);
+            $useData['accessed'] = intuitel_get_access_status_course($lo_id, $native_user_id);
+            $useData['completion'] = intuitel_get_completion_status_course($lo_id, $native_user_id);
+            intuitel_get_grade_info_course($lo_id, $native_user_id);
         } else {  //this is a module (activity or resource)
             $loId = $lo->getloId();
             $lo_id = Intuitel::getIDFactory()->getIdfromLoId($loId);
@@ -681,10 +681,10 @@ class moodleAdaptor extends IntuitelAdaptor {
             $coursemodule_info = $course_modinfo->get_cm($lo_id);
 
             //get the completion status from Moodle
-            $useData['completion'] = get_completion_status($coursemodule_info, $native_user_id);
+            $useData['completion'] = intuitel_get_completion_status($coursemodule_info, $native_user_id);
 
-            $useData['accessed'] = get_access_status($lo_id, $native_user_id);
-            $grade_info = get_grade_info($coursemodule_info, $native_user_id);  //grade_info contains info of the grade obtained as well as maximum and minimum grade of the module
+            $useData['accessed'] = intuitel_get_access_status($lo_id, $native_user_id);
+            $grade_info = intuitel_get_grade_info($coursemodule_info, $native_user_id);  //grade_info contains info of the grade obtained as well as maximum and minimum grade of the module
             if ($grade_info != null) {
                 $useData['grade'] = $grade_info['grade'];
                 $useData['grademax'] = $grade_info['grademax'];
@@ -693,7 +693,7 @@ class moodleAdaptor extends IntuitelAdaptor {
 
             if (($lo->media == 'video') || ($lo->media == 'audio')) {
 
-                $viewed = get_access_status($lo_id, $native_user_id);
+                $viewed = intuitel_get_access_status($lo_id, $native_user_id);
                 if ($viewed) {
                     $useData['seenPercentage'] = 100;
                 } else {
@@ -840,7 +840,7 @@ class moodleAdaptor extends IntuitelAdaptor {
 
     public function generateHtmlForTugAndLore(\SimpleXMLElement $doc, $courseid) {
         // delegates to locallib.php
-        return generateHtmlForTugAndLore($doc, $courseid);
+        return intuitel_generateHtmlForTugAndLore($doc, $courseid);
     }
 
     public function logTugAnswer($courseid, $native_user_id, $mid, $info) {

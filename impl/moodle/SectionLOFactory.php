@@ -57,7 +57,7 @@ class SectionLOFactory extends LOFactory{
 	function createLO(LOId $loId){
 		// get the id of the section in Moodle
 		$id=Intuitel::getIDFactory()->getIdfromLoId($loId);
-		$section_info = get_moodle_section($id);
+		$section_info = intuitel_get_moodle_section($id);
 		if($section_info==false){
 			throw new UnknownLOException;
 		}else{
@@ -272,7 +272,7 @@ class SectionLOFactory extends LOFactory{
 		// get the id of the section in Moodle
 		$id=Intuitel::getIDFactory()->getIdfromLoId($loId);
 		$section_info = get_section_info($id);
-		$media=getMediaType($section_info->summary); //array containing the media types contained in the summary of the section
+		$media=intuitel_getMediaType($section_info->summary); //array containing the media types contained in the summary of the section
 		return $media;
 	}
 
@@ -284,7 +284,7 @@ class SectionLOFactory extends LOFactory{
 	 */
 	private function getLang($rawData){
 		$course_info = get_fast_modinfo($rawData->course);
-		$lang= get_course_lang($course_info);
+		$lang= intuitel_get_course_lang($course_info);
 		return $lang;
 	}
 

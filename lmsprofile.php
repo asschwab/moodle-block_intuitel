@@ -30,11 +30,11 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once('locallib.php');
 require_once('model/exceptions.php');
 require_once('model/intuitelController.php');
-disable_moodle_page_exception_handler();
-check_access();
+intuitel_disable_moodle_page_exception_handler();
+intuitel_check_access();
 global $CFG;
 
-$xml = get_input_message();
+$xml = intuitel_get_input_message();
 $intuitel_msg = IntuitelController::getIntuitelXML($xml);
 $lmsProfile = $intuitel_msg->LmsProfile;
 $mid = IntuitelXMLSerializer::get_required_attribute($lmsProfile, 'mId');

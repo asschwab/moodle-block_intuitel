@@ -81,7 +81,7 @@ if ($action == 'LEARNERUPDATE') {
      * INTUITEL prefers to not receive LoIDs in this case.
      */
     $ignorelo = optional_param('ignoreLo', false, PARAM_BOOL);
-    $html = forward_learner_update_request($cmid, $courseid, $USER->id, $ignorelo);
+    $html = intuitel_forward_learner_update_request($cmid, $courseid, $USER->id, $ignorelo);
 
     // If this is used in a iFrame send Moodle's headers to get styling.
     $includeheaders = optional_param('includeHeaders', false, PARAM_BOOL);
@@ -118,7 +118,7 @@ if ($action == 'LEARNERUPDATE') {
         // TODO: Avoid sending this form in the User Interface but find a way to work without javascript too.
         $message = IntuitelController::ProcessTUGResponse($USER->id, $_REQUEST, $courseid);
         $log->LogDebug("LMS sends TUG answer: $message");
-        submit_to_intuitel($message);
+        intuitel_submit_to_intuitel($message);
     } else {
 
         $mid = required_param('mId', PARAM_ALPHANUMEXT);

@@ -32,11 +32,11 @@ require_once("model/intuitelLO.php");
 require_once('model/serializer.php');
 require_once('model/intuitelController.php');
 
-disable_moodle_page_exception_handler();
-check_access();
+intuitel_disable_moodle_page_exception_handler();
+intuitel_check_access();
 $params=array();
 
-    $xml = get_input_message();
+    $xml = intuitel_get_input_message();
     $response = IntuitelController::ProcessLearnerRequest($xml);
     header('Content-type: text/xml');
     echo $response;
