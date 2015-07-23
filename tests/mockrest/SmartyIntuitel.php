@@ -194,9 +194,9 @@ xml;
 xml;
    }
 
-   /*********
+   /*
     * Test case. Graded activity is abandoned with low grade
-    ***********/
+    */
    if ($previousKOEvent!=null
         && $previous_use_data['grade'] < $previous_use_data['grademax']*2/3)
    {
@@ -223,9 +223,9 @@ xml;
 
    }
 
-   /*********
+   /*
     * Test case. Graded activity is abandoned with high grade. The student is congratulated for good result
-   ***********/
+   */
    if ($previousKOEvent!=null
    && $previous_use_data['grade'] > $previous_use_data['grademax']*2/3)
    {
@@ -249,9 +249,9 @@ xml;
    	$this->selectedLORE[]=new loreRecommendation($previousKOEvent->loId, 80);
 
    }
-   /*********
+   /*
     * Test case. Graded activity is visited with high grade. The student is remembered about
-   ***********/
+   */
    if ($currentKOEvent!=null
    && $current_use_data['grade'] > $current_use_data['grademax']*2/3)
    {
@@ -271,20 +271,13 @@ xml;
 xml;
 
    }
-   /**
+   /*
     * First LO in the course
     */
 $parent = $currentKO->hasParent!=null?$this->intuitelAdaptor->createLO($currentKO->hasParent):null;
 
 if ($currentKO->hasPrecedingSib==null && $parent!=null && $parent->hasPrecedingSib==null)
    {
-//        $this->tugFragment.= <<<xml
-// <intuirr:Tug uId="intuitelstudent1" mId="db4d7ada-58fb-4939-ba0d-41c9ac585efd" rId="dcbcf826-a5fe-4fe8-bcc2-609c299afe04">
-//     <intuirr:MType>4</intuirr:MType>
-//     <intuirr:MData xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">&lt;![CDATA[&lt;h4&gt;You just started the available material. Very good!&lt;/h4&gt;\nPlease, select a Learning Pathway: &lt;select name="invalidateLpSelection[]" &gt;&lt;option name="LpSelection-1" value="1"&gt;Classically structured learning path sequenced by matters.&lt;/option&gt;&lt;option name="LpSelection-N" value="2"&gt;Hierarchically structured material organized by levels of abstraction.&lt;/option&gt;&lt;/select&gt;]]&gt;</intuirr:MData>
-//     </intuirr:Tug>
-// xml;
-
 $this->tugFragment.= <<<xml
 <intuirr:Tug uId="intuitelstudent1" mId="db4d7ada-58fb-4939-ba0d-41c9ac585efd" rId="dcbcf826-a5fe-4fe8-bcc2-609c299afe04">
     <intuirr:MType>4</intuirr:MType>
@@ -298,7 +291,7 @@ $this->tugFragment.= <<<xml
     </intuirr:Tug>
 xml;
    }
-/**
+/*
  * Last LO in the course
  */
 if ($currentKO->hasFollowingSib==null && $parent!=null && $parent->hasFollowingSib==null)

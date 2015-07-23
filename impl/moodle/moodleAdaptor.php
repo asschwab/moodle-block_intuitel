@@ -39,8 +39,11 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/model/KLogger.php');
 global $DB;
 global $CFG;
 global $log;
-if (isset($CFG->block_intuitel_debug_file)) { // this only can be false when installing
-    $log = new \KLogger($CFG->block_intuitel_debug_file, $CFG->block_intuitel_debug_level);
+if ($debug_file = get_config('block_intuitel','debug_file') // this only can be false when first installing
+    || get_config('block_intuitel','debug_level') === KLogger::OFF ) {
+    $log = new \KLogger($debug_file, get_config('block_intuitel','debug_level'));
+}else{
+     $log = new \KLogger('', \KLogger::OFF); // disabled
 }
 
 /**
@@ -813,8 +816,7 @@ class moodleAdaptor extends IntuitelAdaptor {
     }
 
     public function getLMSId() {
-        global $CFG;
-        return $CFG->block_intuitel_LMS_Id;
+        return get_config('block_intuitel','LMS_Id');
     }
 
     public function getLMSProfile() {

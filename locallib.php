@@ -44,7 +44,7 @@ require_once('model/VisitEvent.php');
 
 /**
  * Check access rules to this LMS Adaptor from an INTUITEL service.
- * IPs configured in each line of $CFG->block_intuitel_allowed_intuitel_ips
+ * IPs configured in each line of get_config('block_intuitel','allowed_intuitel_ips')
  * If localhost shoud be allowed '::1' need to be included in the list.
  * '*' in the list disable the filtering and allows all IPs
  * Others are blocked
@@ -55,7 +55,7 @@ require_once('model/VisitEvent.php');
 function intuitel_check_access()
 {
 	global $CFG;
-	$ips=	$CFG->block_intuitel_allowed_intuitel_ips;
+	$ips=	get_config('block_intuitel','allowed_intuitel_ips');
 	if (strlen($ips)>0)
 	{
 	    $ip_array = explode("\n", $ips);
@@ -201,11 +201,11 @@ function intuitel_forward_learner_update_request($cmid,$courseid,$user_id,$ignor
     $userId = Intuitel::getIDFactory()->getUserId($user_id);
 
     global $CFG,$log;
-    if ($ignorelo==true && $CFG->block_intuitel_debug_server==true)
+    if ($ignorelo==true && get_config('block_intuitel','debug_server')==true)
     {
         $log->LogDebug("LMS send refreshing Learner message. Normal Learner procedure because in SIMULATED mode.");
     }
-    if ($ignorelo==true && $CFG->block_intuitel_debug_server==false )// Ignore reporting to INTUITEL. Just send a Learner message with no LoId to repeat reasoning
+    if ($ignorelo==true && get_config('block_intuitel','debug_server')==false )// Ignore reporting to INTUITEL. Just send a Learner message with no LoId to repeat reasoning
                                                                         // But simulated mode need loid to be sent
     {
         $learnerUpdateMessage = '<INTUITEL>';
@@ -216,7 +216,7 @@ function intuitel_forward_learner_update_request($cmid,$courseid,$user_id,$ignor
     else // normal reporting of current and unreported events
     {
         $log->LogDebug("LMS send normal Learner message for user $userId->id");
-        if ($CFG->block_intuitel_report_from_logevent)
+        if (get_config('block_intuitel','report_from_logevent'))
         {
             // get events unreported since last polling
             $events_user = Intuitel::getAdaptorInstance()->getLearnerUpdateData(array($user_id));
@@ -224,12 +224,12 @@ function intuitel_forward_learner_update_request($cmid,$courseid,$user_id,$ignor
             $events = key_exists($userId->id, $events_user)?$events_user[$userId->id]:null;
         }
 
-        if (!$CFG->block_intuitel_report_from_logevent || !$events)
+        if (!get_config('block_intuitel','report_from_logevent') || !$events)
         {
             $event = new VisitEvent($userId,$loId,time());
             $events = array($event);
         }
-        $debug_param = $CFG->block_intuitel_debug_server?'debugcourse="' . $courseid . '"':''; // when using mock REST service help it with native courseid.
+        $debug_param = get_config('block_intuitel','debug_server')?'debugcourse="' . $courseid . '"':''; // when using mock REST service help it with native courseid.
         $learnerUpdateMessage = '<INTUITEL>';
     $log->LogDebug("LearnerUpdate: LMS has found ".count($events)." events regarding user $userId .");
         foreach ($events as $ev)
@@ -323,13 +323,13 @@ $log->LogDebug("LearnerUpdate: INTUITEL response was: $return.");
 function intuitel_get_service_endpoint()
 {
 	global $CFG;
-	if ($CFG->block_intuitel_debug_server)
+	if (get_config('block_intuitel','debug_server'))
 	{
 		$intuitelEndPoint = $CFG->wwwroot.'/blocks/intuitel/tests/mockrest/intuitel.php'; // Fake server
 	}
 	else
 	{
-		$intuitelEndPoint = $CFG->block_intuitel_servicepoint_url;
+		$intuitelEndPoint = get_config('block_intuitel','servicepoint_url');
 	}
 	return $intuitelEndPoint;
 }

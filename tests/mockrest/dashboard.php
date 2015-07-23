@@ -69,7 +69,7 @@ $useridsleft = array_reverse(explode(',', $useridsleft));
 $useridsright = array_reverse(explode(',', $useridsright));
 $rows = max(count($useridsleft), count($useridsright));
 global $CFG;
-if ($CFG->block_intuitel_debug_level != KLogger::DEBUG) {
+if (get_config('block_intuitel','debug_level') != KLogger::DEBUG) {
     echo "This debug function can only be used when debugging is enabled in Intuitel preferences with level: DEBUG.";
 } else {
     echo '<table border="1" width="100%">';

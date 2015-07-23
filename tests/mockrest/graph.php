@@ -52,7 +52,7 @@ $forcestructure = optional_param('forcestructure', false, PARAM_BOOL); // includ
 $include_INTUITEL = optional_param('includeINTUITEL', false, PARAM_BOOL); // include course structure
 require_login($courseid,false);
 global $CFG;
-if ($CFG->block_intuitel_debug_level != KLogger::DEBUG) {
+if (get_config('block_intuitel','debug_level') != KLogger::DEBUG) {
     echo "This debug function can only be used when debugging is enabled in Intuitel preferences with level: DEBUG.";
     die();
 }
@@ -331,7 +331,7 @@ print $dotfile;die;
 }
 
 
-$dot_cmd = $CFG->block_intuitel_graphviz_command;//'dot -Tpng'
+$dot_cmd = get_config('block_intuitel','graphviz_command');//'dot -Tpng'
 // find mimetype
 // if (preg_match("/([a-z]+) -T([a-z]+)/", $dot_cmd, $results))
 //     $format = isset($results[2])?$results[2]:null;

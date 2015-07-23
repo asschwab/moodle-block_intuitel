@@ -172,14 +172,17 @@ class block_intuitel extends block_base {
         $query = "courseid=$course->id&cmid=$cmid&_intuitel_intent=LEARNERUPDATE";
         $url = $CFG->wwwroot . '/blocks/intuitel/IntuitelProxy.php';
 
-        $blockstrategy = $CFG->block_intuitel_no_javascript_strategy;
-        if ($blockstrategy == 'iFrame' || $blockstrategy == 'testiFrame') {
+        $blockstrategy = get_config('block_intuitel', 'no_javascript_strategy');
+
+        if ($blockstrategy === 'iFrame' || $blockstrategy === 'testiFrame') {
             $noscriptcode = $this->generate_iframe_code($url, $query);
-        } else if ($blockstrategy == 'inline' || $blockstrategy == 'testinline') {
+        } else if ($blockstrategy === 'inline' || $blockstrategy === 'testinline') {
             $noscriptcode = $this->generate_inline_code($queryargs);
+        } else {
+            print_error('badconfiguration','block_intuitel');
         }
         // Disable javascript if testing no_script strategies.
-        if ($blockstrategy != 'testinline' && $blockstrategy != 'testiFrame') {
+        if ($blockstrategy !== 'testinline' && $blockstrategy !== 'testiFrame') {
             $dependencies = array('io', 'io-form', 'transition');
 
             $geolocation = $this->is_geolocation_enabled();
@@ -230,7 +233,7 @@ class block_intuitel extends block_base {
         if (isset($this->config->geolocation)) {
             return $this->config->geolocation;
         } else {  // Use global config.
-            return $CFG->block_intuitel_allow_geolocation;
+            return get_config('block_intuitel','allow_geolocation');
         }
     }
 
