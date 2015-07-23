@@ -39,7 +39,10 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/model/KLogger.php');
 global $DB;
 global $CFG;
 global $log;
-$log = new \KLogger($CFG->block_intuitel_debug_file, $CFG->block_intuitel_debug_level);
+if (isset($CFG->block_intuitel_debug_file)) { // this only can be false when installing
+    $log = new \KLogger($CFG->block_intuitel_debug_file, $CFG->block_intuitel_debug_level);
+}
+
 /**
  * LMS-specific methods to integrate INTUITEL protocols into Moodle
  * @author Juan Pablo de Castro, Elena Verdú.

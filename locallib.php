@@ -167,18 +167,11 @@ function intuitel_submit_to_intuitel($xml, $aditional_params=array())
 	$intuitelEndPoint = intuitel_get_service_endpoint();
 
 	//debugging('connecting to: '.$intuitelEndPoint,DEBUG_DEVELOPER);
-	$ch= curl_init($intuitelEndPoint);
-	curl_setopt($ch, CURLOPT_POST, true);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	// curl_setopt($ch, CURLOPT_HEADER, true);
-	// curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-	// curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type: application/xml; charset=utf-8"));
-	curl_setopt($ch, CURLOPT_HTTPHEADER,     array('Content-Type: application/xml'));
-	curl_setopt($ch,CURLOPT_TIMEOUT,120);
-	// curl_setopt($ch, CURLOPT_USERPWD, 'myusername:mypassword');
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-	$return = curl_exec($ch);
-	$info = curl_getinfo($ch);
+    $rest_client= new curl();
+    $rest_client->setHeader(array('Content-Type: application/xml'));
+    $return = $rest_client->post($intuitelEndPoint, $xml,['CURLOPT_POST'=>true,'CURLOPT_RETURNTRANSFER'=>true,'CURLOPT_TIMEOUT'=>120]);
+    $info = $rest_client->info;
+
 	if ($info['http_code']!=200)
 	{
 	    throw new ProtocolErrorException('Intuitel Service did not respond correctly. Please report to the administrator. Error code:'.$info['http_code'].' Cause:'.curl_error($ch).' Response:'.$return,$info['http_code']);
