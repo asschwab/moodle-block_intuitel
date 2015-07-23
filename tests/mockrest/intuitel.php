@@ -21,8 +21,9 @@ require_once('SmartyIntuitel.php');
 //          debugresponse to enable HTML page formating
 //          userid to use native userid in the request.
 $debugresponse = optional_param('debugresponse',false, PARAM_ALPHANUM);
-if ($debugresponse==false)
+if ($debugresponse == false) {
     intuitel_disable_moodle_page_exception_handler();
+}
 $native_userid= optional_param('userid',null,PARAM_INTEGER);
 
 $query=intuitel_get_input_message();
@@ -30,12 +31,13 @@ $intuitelMsg= IntuitelController::getIntuitelXML($query);
 //sleep(4);
 if ($intuitelMsg->Learner) //Learner update message
 {
-if ($native_userid) // Debugging backdoor
-    $learnerid=Intuitel::getIDFactory()->getUserId($native_userid);
-else
-    $learnerid=(string)$intuitelMsg->Learner['uId'];
+    if ($native_userid) { // Debugging backdoor
+        $learnerid = Intuitel::getIDFactory()->getUserId($native_userid);
+    } else {
+        $learnerid = (string) $intuitelMsg->Learner['uId'];
+    }
 
-$loId = new LOId((string)$intuitelMsg->Learner['loId']);
+    $loId = new LOId((string)$intuitelMsg->Learner['loId']);
 $nativeCourseId = (string)$intuitelMsg->Learner['debugcourse'];
 $adaptor = Intuitel::getAdaptorInstanceForCourse();
 $idFactory = Intuitel::getIdFactory();

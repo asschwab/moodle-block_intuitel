@@ -58,8 +58,9 @@ echo $OUTPUT->box_start();
 echo "<form method=\"GET\" action=\"$url\">\n";
 $i = 0;
 foreach ($params as $name) {
-    if ($i++ % 3 == 0)
+    if ($i++ % 3 == 0) {
         echo "   <p>";
+    }
     echo "   $name:<input name=\"$name\" value=\"" . $$name . "\">";
 }
 echo "<input type=\"SUBMIT\"></form>";

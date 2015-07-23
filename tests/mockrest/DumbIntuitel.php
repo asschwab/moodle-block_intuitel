@@ -46,9 +46,10 @@ public function _get_LO_recommendation()
         foreach ($modules as $childLoId)
         {
             $rnd=rand(0, 100);
-            if ($rnd>50)
-                $selected[]=new loreRecommendation($childLoId,rand(0,100));
-        }
+            if ($rnd > 50) {
+                    $selected[] = new loreRecommendation($childLoId, rand(0, 100));
+                }
+            }
     }
     return $selected;
 }

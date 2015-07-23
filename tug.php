@@ -21,11 +21,7 @@
  * @copyright  2015 Intuitel Consortium
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use intuitel\Intuitel;
-use intuitel\IntuitelXMLSerializer;
-use intuitel\idFactory;
 use intuitel\IntuitelController;
-use intuitel\ProtocolErrorException;
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('locallib.php');
@@ -44,5 +40,3 @@ $xml = intuitel_get_input_message();
 $response = IntuitelController::ProcessTUGRequest($xml);
 header('Content-type: text/xml');
 echo $response;
-
-?>

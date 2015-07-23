@@ -44,11 +44,12 @@ var $revisits;
  */
 public function process_learner_update_request($loId,$learnerid,$courseLo)
 {
-    if ($learnerid instanceof UserId)
-        $userID=$learnerid;
-    else
-        $userID=new UserId((string)$learnerid);
-   $user=$this->intuitelAdaptor->getNativeUserFromUId($userID);
+    if ($learnerid instanceof UserId) {
+            $userID = $learnerid;
+        } else {
+            $userID = new UserId((string) $learnerid);
+        }
+        $user=$this->intuitelAdaptor->getNativeUserFromUId($userID);
 
    // Select user interface language the same way Mooodle does:
    // First Course forced lang
@@ -62,17 +63,19 @@ public function process_learner_update_request($loId,$learnerid,$courseLo)
     }
    global $USER;
    $USER=$user;
-   if ($course->lang!='')
-   	  $USER->lang=$course->lang;
-   global $SESSION; $SESSION->lang=$USER->lang;
+   if ($course->lang != '') {
+            $USER->lang = $course->lang;
+        }
+        global $SESSION; $SESSION->lang=$USER->lang;
 
    // end language selection
    $timeFrom = time()-$this->time_window;
    $events_user = $this->intuitelAdaptor->getLearnerUpdateData(array($user->id),$courseLo,$timeFrom,null,false);
    $events=array();
-   if (array_key_exists((string)$userID->id,$events_user))
-        $events = $events_user[(string)$userID->id];
-   list($revisits,$durations) = IntuitelController::compute_revisits($events);
+   if (array_key_exists((string) $userID->id, $events_user)) {
+            $events = $events_user[(string) $userID->id];
+        }
+        list($revisits,$durations) = IntuitelController::compute_revisits($events);
    $this->durations=$durations;
    $this->revisits=$revisits;
    $currentKOEvent=count($durations)>0?$durations[0]:null;
@@ -98,10 +101,11 @@ public function process_learner_update_request($loId,$learnerid,$courseLo)
        $mid=Intuitel::getIDFactory()->getNewMessageUUID();
        $count=$revisits[(string)$currentKOEvent->loId];
        $previous='';
-       if($previousKOEvent)
-        $previous="Antes has estado en $previousKOEvent->loId durante $previousKOEvent->duration segundos";
+       if ($previousKOEvent) {
+                $previous = "Antes has estado en $previousKOEvent->loId durante $previousKOEvent->duration segundos";
+            }
 
-       $this->tugFragment.= <<<xml
+            $this->tugFragment.= <<<xml
 <intuirr:Tug uId="jmb0001" mId="$mid">
 	<intuirr:MType>2</intuirr:MType>
 	<intuirr:MData>Mensaje Obvio de depuración: Ahora estás en $currentKOEvent->loId donde has estado $count veces. $previous.</intuirr:MData>

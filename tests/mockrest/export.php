@@ -71,8 +71,9 @@ if ($format != 'csv') {
     echo "<form method=\"GET\" action=\"$url\">\n";
     $i = 0;
     foreach ($params as $name) {
-        if ($i ++ % 3 == 0)
+        if ($i ++ % 3 == 0) {
             echo "   <p>";
+        }
         echo "   $name:<input name=\"$name\" value=\"" . $$name . "\">";
     }
     echo "<input type=\"SUBMIT\"></form>";
@@ -81,14 +82,16 @@ if ($format != 'csv') {
 
 $useridsleft = array_reverse(explode(',', $useridsleft));
 $useridsright = array_reverse(explode(',', $useridsright));
-if ($fromtime)
+if ($fromtime) {
     $fromtime = strtotime($fromtime);
-else
+} else {
     $fromtime = time() - $time;
-if ($totime)
+}
+if ($totime) {
     $totime = strtotime($totime);
-else
+} else {
     $totime = time();
+}
 output_header($format);
 
 foreach ($useridsleft as $userid) {
@@ -174,8 +177,9 @@ function get_user_events($userid, $courseid, $fromtime, $totime, $limit_event_nu
             ), $courseLo, $fromtime, $totime, false);
 
     $events = array();
-    if (array_key_exists((string) $userID, $events_user))
+    if (array_key_exists((string) $userID, $events_user)) {
         $events = $events_user[(string) $userID];
+    }
     // limit events to process
     if ($limit_event_num) {
         $events = array_slice($events, 0, $limit_event_num);

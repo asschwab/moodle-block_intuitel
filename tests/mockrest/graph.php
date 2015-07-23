@@ -56,14 +56,16 @@ if ($CFG->block_intuitel_debug_level != KLogger::DEBUG) {
     echo "This debug function can only be used when debugging is enabled in Intuitel preferences with level: DEBUG.";
     die();
 }
-if ($fromtime_str)
+if ($fromtime_str) {
     $fromtime = strtotime($fromtime_str);
-else
-    $fromtime = time()-$time;
-if ($totime_str)
-    $totime=strtotime($totime_str);
-else
-    $totime=time();
+} else {
+    $fromtime = time() - $time;
+}
+if ($totime_str) {
+    $totime = strtotime($totime_str);
+} else {
+    $totime = time();
+}
 
 $adaptor = Intuitel::getAdaptorInstance();
 $courseLo = $adaptor->createLO(Intuitel::getIDFactory()->getLoIdfromId('course',$courseid));
@@ -74,8 +76,9 @@ $interactionEvents = $adaptor->getINTUITELInteractions(array($userid),$courseLo,
 
 
 $events=array();
-if (array_key_exists((string)$userID,$events_user))
-    $events = $events_user[(string)$userID];
+if (array_key_exists((string) $userID, $events_user)) {
+    $events = $events_user[(string) $userID];
+}
 // merge and sort arrays
 if ($include_INTUITEL)
 {
@@ -128,10 +131,11 @@ else
     $constraint='constraint=yes';
     $constraint_structure='style=dotted constraint=no color=red';
 }
-if ($rankdir=='default')
-    $graph_rankdir='';
-else
-    $graph_rankdir="rankdir=$rankdir;";
+if ($rankdir == 'default') {
+    $graph_rankdir = '';
+} else {
+    $graph_rankdir = "rankdir=$rankdir;";
+}
 $graph_clustered='';
 $graph_unclustered='';
 $graph_start_node='';
@@ -156,17 +160,19 @@ foreach($node_list as $node=>$visits)
     $loId=new LOId($node);
     $lo=$adaptor->createLO($loId);
     $loType=Intuitel::getIDFactory()->getType($lo->loId);
-    if ($supress_course && $loType == 'course')
-        continue;
-    $name=str_replace('"','',$lo->loName);
+    if ($supress_course && $loType == 'course') {
+            continue;
+        }
+        $name=str_replace('"','',$lo->loName);
     $node = loId_escape($lo->loId);
     list($imgurl,$url)=cleanHTML(intuitel_generateHtmlModuleLink(Intuitel::getIDFactory()->getIdfromLoId($loId)));
     //$img = "<IMG SRC=\"$imgurl\"/>";
     $use_data= $adaptor->getUseData($lo,$userid);
     $label_grade_row='';
-    if (isset($use_data['grade']))
-        $label_grade_row = '<FONT POINT-SIZE="10">Final grade:'.number_format($use_data['grade']).'/'.number_format($use_data['grademax']).'</FONT>';
-    if ($label_grade_row)
+    if (isset($use_data['grade'])) {
+            $label_grade_row = '<FONT POINT-SIZE="10">Final grade:' . number_format($use_data['grade']) . '/' . number_format($use_data['grademax']) . '</FONT>';
+        }
+        if ($label_grade_row)
     {
         $label ="<<TABLE BORDER=\"0\">".
                 "<TR><TD ROWSPAN=\"2\">$name</TD><TD ALIGN=\"LEFT\"><FONT POINT-SIZE=\"10\">$visits visits</FONT></TD></TR><TR><TD>$label_grade_row</TD></TR>".
@@ -184,12 +190,12 @@ foreach($node_list as $node=>$visits)
     $node_lines =$node_lines. $line;
 }
 
-/*********************
+/*
  * Graph title
  */
 $graph_title = "fontsize=20;\nlabelloc=\"t\";\nlabel = \"Graph of user $userid activity from $fromtime_label to $totime_label\";";
 
-/***********************
+/*
  * transitions
  */
 $previousEvent=null;
@@ -208,8 +214,9 @@ foreach ($durations as $event)
     {
         $eventType='Interaction';
     }
-    if ($supress_course && $eventType == 'course')
+    if ($supress_course && $eventType == 'course') {
         continue;
+    }
     if ($previousEvent==null) // first iteration
     {
         $first_node=$event;
@@ -238,10 +245,11 @@ foreach ($durations as $event)
             $clusters[(string)$eventlo->hasParent][]=loId_escape($event->loId)."[$node_style];\n";
         }
 
-        if ($previouslo!=null && $eventlo!=null && $previouslo->hasParent==$eventlo->hasParent)
-            $clusters[(string)$eventlo->hasParent][]=$line1.$line2;
-            else
-            $graph_unclustered.=$line1.$line2;
+        if ($previouslo != null && $eventlo != null && $previouslo->hasParent == $eventlo->hasParent) {
+                $clusters[(string) $eventlo->hasParent][] = $line1 . $line2;
+            } else {
+                $graph_unclustered.=$line1 . $line2;
+            }
         }
         $previousEvent=$event;
         $num++;
@@ -286,9 +294,10 @@ foreach($sectionsLoid as $sectionLoId)
     $modulesLoId = $sectionLo->hasChild;
     foreach ($modulesLoId as $moduleLoId)
     {
-        if (!array_key_exists((string)$moduleLoId,$node_list))
-            continue;
-       //$structure[]=loId_escape($moduleLoId).' [ style="star"];';
+        if (!array_key_exists((string) $moduleLoId, $node_list)) {
+                continue;
+            }
+            //$structure[]=loId_escape($moduleLoId).' [ style="star"];';
        if ($lastModuleLoId!=null)
        {
           $structure[]=loId_escape($lastModuleLoId).' -> '.loId_escape($moduleLoId)."[$constraint_structure];";
@@ -331,11 +340,12 @@ if ($format)
 
 $dot_cmd.=' -T'.$format;
 
-if ($format == 'svg')
-    header('Content-type: image/svg+xml');
-else
-    header('Content-type: image/'.$format);
-header("Content-Disposition: filename=\"course$courseid.user$userid.$format\"");
+if ($format == 'svg') {
+        header('Content-type: image/svg+xml');
+    } else {
+        header('Content-type: image/' . $format);
+    }
+    header("Content-Disposition: filename=\"course$courseid.user$userid.$format\"");
 }
 
 

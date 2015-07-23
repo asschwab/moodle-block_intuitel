@@ -53,8 +53,9 @@ $loMappingResults = array ();
 foreach ( $loMappings as $loMapping )
 {
     $mid = IntuitelXMLSerializer::get_required_attribute($loMapping, 'mId');
-    if (isset($loMappingResults[$mid]))
+    if (isset($loMappingResults[$mid])) {
         throw new ProtocolErrorException("Duplicated message id: $mid");
+    }
     $params = $serializer->parse_mapping_request($loMapping);
 
     // support sending KVP for testing
@@ -63,8 +64,9 @@ foreach ( $loMappings as $loMapping )
         if ($name != 'xml' && $name != 'XDEBUG_SESSION_START')
         {
             $val = optional_param($name, null, PARAM_TEXT);
-            if (isset($val)) // CHECK if NULL is valid parameter
+            if (isset($val)) { // CHECK if NULL is valid parameter
                 $params[$name] = $val;
+            }
         }
     }
 
