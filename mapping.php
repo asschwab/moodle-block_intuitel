@@ -32,10 +32,10 @@ require_once('model/exceptions.php');
 require_once('model/intuitelController.php');
 global $log;
 
-intuitel_disable_moodle_page_exception_handler();
+block_intuitel_disable_moodle_page_exception_handler();
 if (!isset($_SESSION['user_validated'])) // if the user has been authenticated by the AUTH request allows him to request mappings from any IP
 {
-intuitel_check_access();
+block_intuitel_check_access();
 }
 else
 {
@@ -45,7 +45,7 @@ else
 $params=array();
 $serializer = new IntuitelXMLSerializer();
 
-$xml = intuitel_get_input_message();
+$xml = block_intuitel_get_input_message();
 $log->LogDebug("loMapping Request: $xml");
 $intuitel_elements= IntuitelController::getIntuitelXML($xml);
 $loMappings = IntuitelXMLSerializer::get_required_element($intuitel_elements,'LoMapping');

@@ -92,7 +92,7 @@ class tug_response extends base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' responded: '' a TUG message with mid '$this->mid' " .
+        return "The user with id '$this->userid' responded: '' a TUG message with mid ".$this->data['other']['mid'] .
                 "in the course '$this->courseid'.";
     }
 

@@ -22,11 +22,11 @@ require_once('SmartyIntuitel.php');
 //          userid to use native userid in the request.
 $debugresponse = optional_param('debugresponse',false, PARAM_ALPHANUM);
 if ($debugresponse == false) {
-    intuitel_disable_moodle_page_exception_handler();
+    block_intuitel_disable_moodle_page_exception_handler();
 }
 $native_userid= optional_param('userid',null,PARAM_INTEGER);
 
-$query=intuitel_get_input_message();
+$query=block_intuitel_get_input_message();
 $intuitelMsg= IntuitelController::getIntuitelXML($query);
 //sleep(4);
 if ($intuitelMsg->Learner) //Learner update message

@@ -125,7 +125,7 @@ class CourseLOFactory extends LOFactory {
      */
     private function getLang($rawData) {
 
-        $lang = intuitel_get_course_lang($rawData);
+        $lang = block_intuitel_get_course_lang($rawData);
         return $lang;
     }
 

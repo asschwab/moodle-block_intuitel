@@ -20,7 +20,7 @@
  * this module is provides as-is without any guarantee. Use it as your own risk.
  * @package block_intuitel
  * @author Juan Pablo de Castro, Elena Verdú.
- * @copyright (c) 2014, INTUITEL Consortium
+ * @copyright (c) 2014, INTUITEL Consortium http://www.intuitel.eu 
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 use intuitel\Intuitel;
@@ -81,7 +81,7 @@ if ($action == 'LEARNERUPDATE') {
      * INTUITEL prefers to not receive LoIDs in this case.
      */
     $ignorelo = optional_param('ignoreLo', false, PARAM_BOOL);
-    $html = intuitel_forward_learner_update_request($cmid, $courseid, $USER->id, $ignorelo);
+    $html = block_intuitel_forward_learner_update_request($cmid, $courseid, $USER->id, $ignorelo);
 
     // If this is used in a iFrame send Moodle's headers to get styling.
     $includeheaders = optional_param('includeHeaders', false, PARAM_BOOL);
@@ -118,7 +118,7 @@ if ($action == 'LEARNERUPDATE') {
         // TODO: Avoid sending this form in the User Interface but find a way to work without javascript too.
         $message = IntuitelController::ProcessTUGResponse($USER->id, $_REQUEST, $courseid);
         $log->LogDebug("LMS sends TUG answer: $message");
-        intuitel_submit_to_intuitel($message);
+        block_intuitel_submit_to_intuitel($message);
     } else {
 
         $mid = required_param('mId', PARAM_ALPHANUMEXT);

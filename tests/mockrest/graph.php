@@ -165,7 +165,7 @@ foreach($node_list as $node=>$visits)
         }
         $name=str_replace('"','',$lo->loName);
     $node = loId_escape($lo->loId);
-    list($imgurl,$url)=cleanHTML(intuitel_generateHtmlModuleLink(Intuitel::getIDFactory()->getIdfromLoId($loId)));
+    list($imgurl,$url)=cleanHTML(block_intuitel_generateHtmlModuleLink(Intuitel::getIDFactory()->getIdfromLoId($loId)));
     //$img = "<IMG SRC=\"$imgurl\"/>";
     $use_data= $adaptor->getUseData($lo,$userid);
     $label_grade_row='';

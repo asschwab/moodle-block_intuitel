@@ -92,7 +92,7 @@ class tug_dismissed extends base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' dismissed a TUG message with mid '$this->mid' " .
+        return "The user with id '$this->userid' dismissed a TUG message with mid ".$this->data['other']['mid'] .
                 "in the course '$this->courseid'.";
     }
 

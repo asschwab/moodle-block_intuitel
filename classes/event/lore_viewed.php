@@ -76,7 +76,7 @@ class lore_viewed extends base {
      */
     protected function init() {
         $this->data['crud'] = 'r';
-        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
     }
 
     /**
@@ -94,7 +94,7 @@ class lore_viewed extends base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' received a LORE recommendation with mid '$this->mid' " .
+        return "The user with id '$this->userid' received a LORE recommendation with mid ".$this->data['other']['mid'] .
                 "in the course '$this->courseid'. " . $this->data['other']['info'];
     }
 

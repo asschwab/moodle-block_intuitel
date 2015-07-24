@@ -31,12 +31,12 @@ require_once('model/serializer.php');
 require_once('model/intuitelController.php');
 require_once('model/exceptions.php');
 
-intuitel_disable_moodle_page_exception_handler();
+block_intuitel_disable_moodle_page_exception_handler();
 
-intuitel_check_access();
+block_intuitel_check_access();
 $params=array();
 
-$xml = intuitel_get_input_message();
+$xml = block_intuitel_get_input_message();
 $response = IntuitelController::ProcessTUGRequest($xml);
 header('Content-type: text/xml');
 echo $response;

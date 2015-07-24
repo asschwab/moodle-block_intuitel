@@ -27,10 +27,10 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('locallib.php');
 require_once('model/exceptions.php');
 
-intuitel_disable_moodle_page_exception_handler();
+block_intuitel_disable_moodle_page_exception_handler();
 
-intuitel_check_access ();
-$xml = intuitel_get_input_message();
+block_intuitel_check_access ();
+$xml = block_intuitel_get_input_message();
 $response = IntuitelController::ProcessLoreRequest($xml);
 header ( 'Content-type: text/xml' );
 echo $response;
