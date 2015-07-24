@@ -31,8 +31,8 @@ require_once("../../config.php");
 require_once('locallib.php');
 require_once('model/exceptions.php');
 
-intuitel_disable_moodle_page_exception_handler();
-$xml = intuitel_get_input_message('POST|GET');
+block_intuitel_disable_moodle_page_exception_handler();
+$xml = block_intuitel_get_input_message('POST|GET');
 list($validated, $useridsvalidated, $response) = IntuitelController::ProcessAuthRequest($xml);
 if ($validated) {
     $_SESSION['user_validated'] = true;

@@ -20,7 +20,7 @@
  * this module is provides as-is without any guarantee. Use it as your own risk.
  * @package block_intuitel
  * @author Juan Pablo de Castro, Elena Verdú.
- * @copyright (c) 2014, INTUITEL Consortium
+ * @copyright (c) 2014, INTUITEL Consortium http://www.intuitel.eu
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 use intuitel\Intuitel;
@@ -246,7 +246,7 @@ class block_intuitel extends block_base {
 
     public function generate_inline_code($args) {
         global $USER;
-        $html = intuitel_forward_learner_update_request($args['cmid'], $args['courseid'], $USER->id);
+        $html = block_intuitel_forward_learner_update_request($args['cmid'], $args['courseid'], $USER->id);
 
         return $html;
     }

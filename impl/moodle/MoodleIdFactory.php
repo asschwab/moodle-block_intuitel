@@ -107,7 +107,7 @@ class MoodleIDFactory extends idFactory {
         $id_part = $parts[1];
         $startloId = substr($id_part, 0, 2);
         if ($startloId == 'CM') {
-            return intuitel_get_cm_type(substr($id_part, 2));
+            return block_intuitel_get_cm_type(substr($id_part, 2));
         } else if ($startloId == 'SE') {
             return 'section';
         } else if ($startloId == 'CO') {
