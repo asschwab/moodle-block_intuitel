@@ -42,8 +42,9 @@ $limit = optional_param('limit', null, PARAM_INT);
 $mintime = optional_param('mintime', null, PARAM_INTEGER);
 $forcestructure = optional_param('forcestructure', false, PARAM_BOOL); // include course structure
 $includeINTUITEL = optional_param('includeINTUITEL', false, PARAM_BOOL); // include course structure
+$showtimes = optional_param('showtimes', true, PARAM_BOOL); // include course structure
 
-$params = array('useridsleft', 'useridsright', 'courseid', 'fromtime', 'totime', 'time', 'nocourse', 'limit', 'mintime', 'forcestructure', 'rankdir', 'format', 'includeINTUITEL');
+$params = array('useridsleft', 'useridsright', 'courseid', 'fromtime', 'totime', 'time', 'nocourse', 'limit', 'mintime', 'forcestructure', 'rankdir', 'format', 'includeINTUITEL','showtimes');
 require_login($courseid, false);
 
 // show headings and menus of page
@@ -76,7 +77,7 @@ if (get_config('block_intuitel','debug_level') != KLogger::DEBUG) {
     for ($i = 0; $i < $rows; $i++) {
         $userleft = array_pop($useridsleft);
         $userright = array_pop($useridsright);
-        $graph_params = "courseid=$courseid&fromtime=$fromtime&totime=$totime&rankdir=$rankdir&nocourse=$nocourse&limit=$limit&mintime=$mintime&format=$format&forcestructure=$forcestructure&includeINTUITEL=$includeINTUITEL";
+        $graph_params = "courseid=$courseid&fromtime=$fromtime&totime=$totime&rankdir=$rankdir&nocourse=$nocourse&limit=$limit&mintime=$mintime&format=$format&forcestructure=$forcestructure&includeINTUITEL=$includeINTUITEL&showtimes=$showtimes";
         $imgleft = "graph.php?userid=$userleft&$graph_params";
         $imgright = "graph.php?userid=$userright&$graph_params";
 

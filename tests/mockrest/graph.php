@@ -50,6 +50,8 @@ $limit_event_num = optional_param('limit',null,PARAM_INT);
 $min_time = optional_param('mintime',null,PARAM_INTEGER); // minimum time to consider a transition
 $forcestructure = optional_param('forcestructure', false, PARAM_BOOL); // include course structure
 $include_INTUITEL = optional_param('includeINTUITEL', false, PARAM_BOOL); // include course structure
+$showtimes = optional_param('showtimes', true, PARAM_BOOL); // include course structure
+
 require_login($courseid,false);
 global $CFG;
 if (get_config('block_intuitel','debug_level') != KLogger::DEBUG) {
@@ -232,9 +234,17 @@ foreach ($durations as $event)
         $eventlo=($event instanceof intuitel\VisitEvent)?$adaptor->createLO($event->loId):null;
         if ($min_time==null || $previousEvent->duration>$min_time) // ignore too short transitions
         {
-        $duration = $previousEvent->duration <60?"$previousEvent->duration sec.":strftime("%M min %S sec", $previousEvent->duration);
+            if ($showtimes){
+                $duration = $previousEvent->duration <60?"$previousEvent->duration sec.":strftime("%M min %S sec", $previousEvent->duration);
+                $durationfragment = "<TD><FONT POINT-SIZE=\"10\">$duration</FONT></TD>";
+            }else{
+                $duration = '';
+                $durationfragment='';
+            }
         $label = "<<TABLE VALIGN=\"MIDDLE\" COLOR=\"gray\" BGCOLOR=\"white\" BORDER=\"1\" CELLBORDER=\"0\" CELLPADDING=\"2\" CELLSPACING=\"0\" >".
-                 "<TR><TD ROWSPAN=\"2\" BGCOLOR=\"darkgray\"><font color=\"white\">$num</font></TD><TD><FONT POINT-SIZE=\"10\">$duration</FONT></TD></TR>";
+                 "<TR><TD ROWSPAN=\"2\" BGCOLOR=\"darkgray\"><font color=\"white\">$num</font></TD>"
+                .$durationfragment
+                ."</TR>";
         $label.='</TABLE>>';
 
         $line1= loId_escape($previousEvent->loId).' -> '.loId_escape($event->loId);
