@@ -40,7 +40,7 @@ global $DB;
 global $CFG;
 global $log;
 if ($debug_file = get_config('block_intuitel','debug_file') // this only can be false when first installing
-    || get_config('block_intuitel','debug_level') === KLogger::OFF ) {
+    || get_config('block_intuitel','debug_level') === \KLogger::OFF ) {
     $log = new \KLogger($debug_file, get_config('block_intuitel','debug_level'));
 }else{
      $log = new \KLogger('', \KLogger::OFF); // disabled
