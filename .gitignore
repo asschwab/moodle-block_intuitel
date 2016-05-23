@@ -17,5 +17,5 @@
 /.project
 /nbproject/private/
 /nbproject
-nbproject/project.properties
-nbproject/project.xml
+nbproject
+.project

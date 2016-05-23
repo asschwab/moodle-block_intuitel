@@ -162,7 +162,7 @@ function block_intuitel_submit_to_intuitel($xml, $aditional_params = array()) {
     $info = $rest_client->info;
 
     if ($info['http_code'] != 200) {
-        throw new ProtocolErrorException('Intuitel Service did not respond correctly. Please report to the administrator. Error code:' . $info['http_code'] . ' Cause:' . curl_error($ch) . ' Response:' . $return,
+        throw new ProtocolErrorException('Intuitel Service did not respond correctly. Please report to the administrator. Error code:' . $info['http_code'] . ' Cause:' . $rest_client->error . ' Response:' . $return,
         $info['http_code']);
     }
     return $return;
